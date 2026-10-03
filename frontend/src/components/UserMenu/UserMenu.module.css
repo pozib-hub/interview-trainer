@@ -1,0 +1,85 @@
+.UserMenuWrap {
+  position: relative;
+}
+
+.Trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--bg-softer);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.15s;
+  max-width: 160px;
+}
+
+.Trigger:hover {
+  background: var(--border);
+}
+
+.TriggerLogin {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.Menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 200;
+  min-width: 220px;
+  padding: 6px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.MenuHeader {
+  padding: 8px 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.MenuItem {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  text-align: left;
+  color: var(--text);
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.MenuItem:hover {
+  background: var(--bg-softer);
+}
+
+.MenuItemDanger {
+  color: var(--red);
+}
+
+.MenuItemDanger:hover {
+  background: rgba(248, 81, 73, 0.1);
+}
+
+.MenuDivider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}

@@ -1,0 +1,29 @@
+.SidebarTop {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 12px 4px;
+}
+
+.DueChip {
+  padding: 5px 10px;
+  font-size: 12px;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--bg-softer);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.15s;
+  text-align: center;
+}
+
+.DueChip:hover {
+  background: var(--border);
+}
+
+.DueChipActive {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--bg-soft);
+}

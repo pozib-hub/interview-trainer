@@ -8,6 +8,7 @@ import { useResizableLayout, DragHandle } from "@hooks/useResizableLayout";
 import { useAppData } from "@hooks/useAppData";
 import { fetchTopics } from "@lib/taskApi";
 import { Box, Button, Skeleton, Spacer, Spinner, ThemeToggle, Typography } from "@ui/index";
+import styles from "./TasksLayout.module.css";
 
 export default function TasksLayout() {
   const [topics, setTopics] = useState<Record<string, TaskSummary[]>>({});
@@ -34,18 +35,11 @@ export default function TasksLayout() {
     return filtered;
   }, [topics, reviewOnly, dueIds]);
 
-  const handleClearSolved = () => {
-    if (app.solvedList.length === 0) return;
-    if (confirm(`Сбросить все решённые задачи (${app.solvedList.length})?`)) {
-      app.clearSolved();
-    }
-  };
-
   return (
     <div className="AppShell">
       <header className="AppHeader">
         <h1>Interview Trainer</h1>
-        <Typography color="text-muted" size={12}>
+        <Typography tag="span" color="text-muted" size={12}>
           {loadingTasks ? (
             <>
               <Spinner mr={6} />
@@ -63,38 +57,31 @@ export default function TasksLayout() {
           )}
         </Typography>
         <Spacer />
-        {app.solvedList.length > 0 && (
-          <Button
-            size="sm"
-            onClick={handleClearSolved}
-            title="Сбросить все решённые задачи"
-          >
-            Сбросить решённые
-          </Button>
-        )}
-        <ThemeToggle />
-        <UserMenu />
-        {app.dueReviewIds.length > 0 && (
-          <Button
-            size="sm"
-            onClick={() => setReviewOnly((v) => !v)}
-            title={reviewOnly ? "Показать все задачи" : "Показать только задачи к повторению"}
-            style={reviewOnly ? { borderColor: "var(--accent)", color: "var(--accent)" } : undefined}
-          >
-            🔁 К повторению: {app.dueReviewIds.length}
-          </Button>
-        )}
         <Button size="sm" href="/interview">🎯 Собеседование</Button>
         <Button size="sm" href="/progress" title="Дашборд прогресса: активность, темы, рекомендации">📊 Прогресс</Button>
-        <Button size="sm" variant="primary" onClick={() => setProposalOpen(true)} title="Предложить новую задачу — ИИ сгенерирует её и откроет pull request">
-          ➕ Добавить задачу
-        </Button>
+        <ThemeToggle />
+        <UserMenu />
       </header>
       <div className="AppBody" ref={containerRef}>
         <aside
           className="Sidebar"
           style={{ width: layout.sidebar, flexShrink: 0 }}
         >
+          <div className={styles.SidebarTop}>
+            <Button size="sm" variant="primary" block onClick={() => setProposalOpen(true)} title="Предложить новую задачу — ИИ сгенерирует её и откроет pull request">
+              ➕ Предложить задачу
+            </Button>
+            {app.dueReviewIds.length > 0 && (
+              <button
+                type="button"
+                className={`${styles.DueChip} ${reviewOnly ? styles.DueChipActive : ""}`}
+                onClick={() => setReviewOnly((v) => !v)}
+                title={reviewOnly ? "Показать все задачи" : "Показать только задачи к повторению"}
+              >
+                🔁 К повторению: {app.dueReviewIds.length}
+              </button>
+            )}
+          </div>
           <TaskTree
             topics={displayedTopics}
             isSolved={app.isSolved}
