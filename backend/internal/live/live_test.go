@@ -51,6 +51,23 @@ func TestCreateRoom_TaskNotFound(t *testing.T) {
 	}
 }
 
+func TestCreateRoom_EmptySession(t *testing.T) {
+	h := newTestHub(t)
+	room, err := h.CreateRoom("")
+	if err != nil {
+		t.Fatal(err)
+	}
+	room.mu.Lock()
+	taskID, content := room.Task.ID, room.content
+	room.mu.Unlock()
+	if taskID != "" {
+		t.Errorf("пустая сессия не должна содержать задачу, получено %q", taskID)
+	}
+	if content != "" {
+		t.Errorf("код пустой сессии должен быть пустым: %q", content)
+	}
+}
+
 func TestRoomIDAlphabet(t *testing.T) {
 	seen := make(map[string]bool)
 	for i := 0; i < 100; i++ {

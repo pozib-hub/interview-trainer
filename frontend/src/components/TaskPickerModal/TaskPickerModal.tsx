@@ -1,26 +1,23 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button, Spinner, Typography } from "@ui/index";
 import { fetchTopics } from "@lib/taskApi";
 import type { TaskSummary } from "@lib/types";
-import styles from "./LiveSetupModal.module.css";
+import styles from "./TaskPickerModal.module.css";
 
-interface ILiveSetupModalProps {
+interface ITaskPickerModalProps {
   open: boolean;
   onClose: () => void;
+  onPick: (taskId: string) => void;
+  excludeId?: string;
 }
 
-export default function LiveSetupModal({ open, onClose }: ILiveSetupModalProps) {
-  const navigate = useNavigate();
+export default function TaskPickerModal({ open, onClose, onPick, excludeId }: ITaskPickerModalProps) {
   const [tasks, setTasks] = useState<TaskSummary[]>([]);
   const [query, setQuery] = useState("");
-  const [creating, setCreating] = useState(false);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!open) return;
     setQuery("");
-    setError("");
     fetchTopics().then((data) => setTasks(Object.values(data).flat()));
   }, [open]);
 
@@ -32,40 +29,17 @@ export default function LiveSetupModal({ open, onClose }: ILiveSetupModalProps) 
           t.id.toLowerCase().includes(q) ||
           t.tags.some((tag) => tag.toLowerCase().includes(q)))
       : tasks;
-    return list.slice(0, 40);
-  }, [tasks, query]);
+    return list.filter((t) => t.id !== excludeId).slice(0, 40);
+  }, [tasks, query, excludeId]);
 
   if (!open) return null;
 
-  const createRoom = async (taskId: string) => {
-    setCreating(true);
-    setError("");
-    try {
-      const res = await fetch("/api/live/rooms", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ taskId }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || `Ошибка ${res.status}`);
-        return;
-      }
-      navigate(`/live/${data.roomId}`);
-    } catch {
-      setError("Не удалось создать комнату");
-    } finally {
-      setCreating(false);
-    }
-  };
-
   return (
-    <div className={styles.Overlay} onMouseDown={(e) => e.target === e.currentTarget && !creating && onClose()}>
+    <div className={styles.Overlay} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <div className={styles.Panel} onMouseDown={(e) => e.stopPropagation()}>
-        <Typography tag="h2" size={18} mb={4}>🎙 Лайвкодинг</Typography>
+        <Typography tag="h2" size={18} mb={4}>Выбрать задачу</Typography>
         <Typography tag="p" color="text-muted" size={12} mb={16}>
-          Выбери задачу — получишь ссылку-приглашение. Один пишет, остальные видят код вживую;
-          клавиатуру можно передавать. Идеально для мок-собеседования.
+          Задача появится у всех участников комнаты; код начнётся с шаблона.
         </Typography>
 
         <input
@@ -78,7 +52,7 @@ export default function LiveSetupModal({ open, onClose }: ILiveSetupModalProps) 
 
         <div className={styles.List}>
           {filtered.map((t) => (
-            <button key={t.id} type="button" className={styles.TaskRow} onClick={() => createRoom(t.id)} disabled={creating}>
+            <button key={t.id} type="button" className={styles.TaskRow} onClick={() => onPick(t.id)}>
               <span className={styles.TaskTitle}>{t.title}</span>
               <span className={styles.TaskTopic}>{t.topic}</span>
             </button>
@@ -91,12 +65,8 @@ export default function LiveSetupModal({ open, onClose }: ILiveSetupModalProps) 
           )}
         </div>
 
-        {error && (
-          <Typography tag="p" color="red" size={12} mb={8}>{error}</Typography>
-        )}
-
         <div className={styles.Actions}>
-          <Button size="sm" onClick={onClose} disabled={creating}>Отмена</Button>
+          <Button size="sm" onClick={onClose}>Отмена</Button>
         </div>
       </div>
     </div>

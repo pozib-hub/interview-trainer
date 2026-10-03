@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/json"
+	"fmt"
 	"math/big"
 	"net/http"
 	"sync"
@@ -66,27 +67,30 @@ type conn struct {
 
 // clientMessage — входящее от клиента.
 type clientMessage struct {
-	Type    string `json:"type"` // join | code | take_wheel | run | chat
+	Type    string `json:"type"` // join | code | take_wheel | run | chat | pick_task
 	Name    string `json:"name,omitempty"`
 	Content string `json:"content,omitempty"`
 	Text    string `json:"text,omitempty"`
+	TaskID  string `json:"taskId,omitempty"`
 }
 
-// taskMsg — статичная информация о задаче (отправляется один раз при входе).
+// taskMsg — информация о задаче (при входе и при выборе новой).
 type taskMsg struct {
-	Type string           `json:"type"`
+	Type string          `json:"type"`
 	Task domain.TaskFull `json:"task"`
 }
 
 // stateMsg — полное состояние комнаты (при любом изменении).
 type stateMsg struct {
-	Type         string              `json:"type"`
-	RoomID       string              `json:"roomId"`
-	Participants []Participant       `json:"participants"`
-	DriverID     string              `json:"driverId"`
-	Content      string              `json:"content"`
-	Running      bool               `json:"running"`
-	LastRun      *domain.RunResult   `json:"lastRun,omitempty"`
+	Type         string            `json:"type"`
+	RoomID       string            `json:"roomId"`
+	Participants []Participant     `json:"participants"`
+	DriverID     string            `json:"driverId"`
+	Content      string            `json:"content"`
+	Running      bool              `json:"running"`
+	TaskID       string            `json:"taskId"`
+	TaskTitle    string            `json:"taskTitle"`
+	LastRun      *domain.RunResult `json:"lastRun,omitempty"`
 }
 
 type Participant struct {
@@ -144,6 +148,8 @@ func (r *Room) buildState() stateMsg {
 		DriverID:     driverID,
 		Content:      r.content,
 		Running:      r.running,
+		TaskID:       r.Task.ID,
+		TaskTitle:    r.Task.Title,
 		LastRun:      r.lastRun,
 	}
 }
@@ -166,15 +172,13 @@ func (r *Room) broadcastState() {
 
 // ─── HTTP/WS обработчики ───────────────────────────────────────────────────
 
-// HandleCreateRoom обрабатывает POST /api/live/rooms {taskId} → {roomId}.
+// HandleCreateRoom обрабатывает POST /api/live/rooms {taskId?} → {roomId}.
+// Без taskId создаётся пустая сессия — задачу выберут внутри комнаты.
 func (h *Hub) HandleCreateRoom(w http.ResponseWriter, req *http.Request) {
 	var body struct {
 		TaskID string `json:"taskId"`
 	}
-	if err := json.NewDecoder(req.Body).Decode(&body); err != nil || body.TaskID == "" {
-		http.Error(w, `{"error":"требуется taskId"}`, http.StatusBadRequest)
-		return
-	}
+	_ = json.NewDecoder(req.Body).Decode(&body)
 	room, err := h.CreateRoom(body.TaskID)
 	if err != nil {
 		http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
@@ -214,11 +218,16 @@ func (h *Hub) HandleWS(w http.ResponseWriter, req *http.Request) {
 	room.join(c)
 	h.log.Info("live join", "room", room.ID, "name", name)
 
-	// Статичная информация о задаче + собственный id + текущее состояние.
-	if data, err := json.Marshal(taskMsg{Type: "task", Task: room.Task}); err == nil {
-		select {
-		case c.send <- data:
-		default:
+	// Информация о задаче (если выбрана) + собственный id + состояние.
+	room.mu.Lock()
+	task := room.Task
+	room.mu.Unlock()
+	if task.ID != "" {
+		if data, err := json.Marshal(taskMsg{Type: "task", Task: task}); err == nil {
+			select {
+			case c.send <- data:
+			default:
+			}
 		}
 	}
 	if data, err := json.Marshal(struct {
@@ -260,6 +269,8 @@ func (c *conn) readPump(h *Hub) {
 			continue
 		}
 		switch msg.Type {
+		case "pick_task":
+			h.pickTask(c, msg.TaskID)
 		case "code":
 			r := c.room
 			r.mu.Lock()
@@ -285,43 +296,85 @@ func (c *conn) readPump(h *Hub) {
 			if len(text) > 500 {
 				text = text[:500]
 			}
-			msg := ChatMsg{From: c.name, Text: string(text), At: time.Now().UnixMilli()}
-			r := c.room
-			r.mu.Lock()
-			r.chat = append(r.chat, msg)
-			if len(r.chat) > chatHistory {
-				r.chat = r.chat[len(r.chat)-chatHistory:]
-			}
-			r.mu.Unlock()
-			if data, err := json.Marshal(chatMsgWire{Type: "chat", Msg: msg}); err == nil {
-				r.mu.Lock()
-				for other := range r.conns {
-					select {
-					case other.send <- data:
-					default:
-					}
-				}
-				r.mu.Unlock()
+			c.room.broadcastChat(ChatMsg{From: c.name, Text: string(text), At: time.Now().UnixMilli()})
+		}
+	}
+}
+
+// pickTask меняет задачу сессии: код сбрасывается на шаблон новой задачи.
+func (h *Hub) pickTask(c *conn, taskID string) {
+	task, ok := h.tasks.GetTask(taskID)
+	if !ok {
+		return
+	}
+	r := c.room
+	r.mu.Lock()
+	r.Task = task
+	r.content = task.Template
+	r.lastRun = nil
+	r.running = false
+	r.lastActive = time.Now()
+	r.mu.Unlock()
+
+	// Всем — новую задачу, системное сообщение в чат и состояние.
+	if data, err := json.Marshal(taskMsg{Type: "task", Task: task}); err == nil {
+		r.broadcastRaw(data)
+	}
+	r.broadcastChat(ChatMsg{
+		From: "система",
+		Text: fmt.Sprintf("%s выбрал задачу «%s»", c.name, task.Title),
+		At:   time.Now().UnixMilli(),
+	})
+	r.broadcastState()
+	h.log.Info("live task picked", "room", r.ID, "taskId", taskID, "by", c.name)
+}
+
+// broadcastRaw рассылает произвольное сообщение всем участникам.
+func (r *Room) broadcastRaw(data []byte) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	for c := range r.conns {
+		select {
+		case c.send <- data:
+		default:
+		}
+	}
+}
+
+// broadcastChat добавляет сообщение в историю и рассылает всем.
+func (r *Room) broadcastChat(msg ChatMsg) {
+	r.mu.Lock()
+	r.chat = append(r.chat, msg)
+	if len(r.chat) > chatHistory {
+		r.chat = r.chat[len(r.chat)-chatHistory:]
+	}
+	if data, err := json.Marshal(chatMsgWire{Type: "chat", Msg: msg}); err == nil {
+		for c := range r.conns {
+			select {
+			case c.send <- data:
+			default:
 			}
 		}
 	}
+	r.mu.Unlock()
 }
 
 // startRun запускает тесты от имени ведущего; результат видят все.
 func (h *Hub) startRun(c *conn) {
 	r := c.room
 	r.mu.Lock()
-	if r.running || r.driver != c {
+	if r.running || r.driver != c || r.Task.ID == "" {
 		r.mu.Unlock()
 		return
 	}
 	r.running = true
 	content := r.content
+	task := r.Task
 	r.mu.Unlock()
 	r.broadcastState()
 
 	go func() {
-		result := h.runner.Run(context.Background(), r.Task, content)
+		result := h.runner.Run(context.Background(), task, content)
 		r.mu.Lock()
 		r.running = false
 		r.lastRun = &result

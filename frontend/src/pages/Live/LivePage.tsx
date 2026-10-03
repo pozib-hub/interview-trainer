@@ -4,6 +4,7 @@ import { Button, Spinner, Typography } from "@ui/index";
 import CodeEditor from "@components/CodeEditor";
 import TestResults from "@components/TestResults";
 import ConditionPanel from "@components/ConditionPanel";
+import TaskPickerModal from "@components/TaskPickerModal";
 import { useLiveRoom } from "@hooks/useLiveRoom";
 import styles from "./LivePage.module.css";
 
@@ -27,11 +28,18 @@ export default function LivePage() {
   const codeRef = useRef<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [chatText, setChatText] = useState("");
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   // Драйвер правит код локально; остальные зеркалят состояние с сервера.
   useEffect(() => {
     if (room.state) setLocalCode((prev) => (isDriver ? prev : room.state!.content));
   }, [room.state, isDriver]);
+
+  // Смена задачи в комнате: у всех код и результат сбрасываются.
+  const taskID = room.task?.id;
+  useEffect(() => {
+    setLocalCode(null);
+  }, [taskID]);
 
   const handleCodeChange = (v: string) => {
     if (!isDriver) return;
@@ -94,10 +102,42 @@ export default function LivePage() {
     );
   }
 
-  if (room.status === "connecting" || (room.status === "connected" && !room.task)) {
+  if (room.status === "connecting" || (room.status === "connected" && !room.state)) {
     return (
       <div className={styles.Center}>
         <Typography size={16}><Spinner mr={8} />Подключение к комнате…</Typography>
+      </div>
+    );
+  }
+
+  // Задача ещё не выбрана — сессия ждёт выбора.
+  if (room.status === "connected" && !room.task) {
+    return (
+      <div className={styles.Page}>
+        <header className={styles.Header}>
+          <Button size="sm" href="/tasks">← Выйти</Button>
+          <Typography tag="span" size={13} className={styles.TaskTitle}>🎙 Сессия лайвкодинга</Typography>
+          <span className={styles.Badge}>комната {roomId}</span>
+          <Button size="sm" onClick={copyInvite} title="Скопировать ссылку-приглашение">🔗 Пригласить</Button>
+        </header>
+        <div className={styles.Center}>
+          <Typography tag="h1" size={18} mb={8}>Выберите задачу</Typography>
+          <Typography tag="p" color="text-muted" size={13} mb={16}>
+            Задачу увидят все участники комнаты. Можно решать сколько угодно задач подряд —
+            как на настоящем собеседовании.
+          </Typography>
+          <Button size="lg" variant="primary" onClick={() => setPickerOpen(true)}>
+            ▶ Выбрать задачу
+          </Button>
+        </div>
+        <TaskPickerModal
+          open={pickerOpen}
+          onClose={() => setPickerOpen(false)}
+          onPick={(id) => {
+            setPickerOpen(false);
+            room.pickTask(id);
+          }}
+        />
       </div>
     );
   }
@@ -124,6 +164,9 @@ export default function LivePage() {
         <Typography tag="span" size={13} className={styles.TaskTitle}>
           🎙 {room.task.title}
         </Typography>
+        <Button size="sm" onClick={() => setPickerOpen(true)} title="Выбрать другую задачу — код начнётся с шаблона">
+          ⏭ Другая задача
+        </Button>
         <span className={styles.Badge}>комната {roomId}</span>
         <Button size="sm" onClick={copyInvite} title="Скопировать ссылку-приглашение">
           🔗 Пригласить
@@ -209,6 +252,16 @@ export default function LivePage() {
           👀 Ты наблюдаешь{driver ? `: за клавиатурой ${driver.name}` : ""}. Нажми «Взять клавиатуру», чтобы писать код.
         </div>
       )}
+
+      <TaskPickerModal
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onPick={(id) => {
+          setPickerOpen(false);
+          room.pickTask(id);
+        }}
+        excludeId={room.task.id}
+      />
     </div>
   );
 }

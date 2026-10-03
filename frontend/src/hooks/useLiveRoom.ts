@@ -12,6 +12,8 @@ export interface LiveState {
   driverId: string;
   content: string;
   running: boolean;
+  taskId: string;
+  taskTitle: string;
   lastRun: RunResult | null;
 }
 
@@ -67,6 +69,8 @@ export function useLiveRoom(roomId: string, name: string) {
             driverId: msg.driverId,
             content: msg.content,
             running: msg.running,
+            taskId: msg.taskId ?? "",
+            taskTitle: msg.taskTitle ?? "",
             lastRun: msg.lastRun ?? null,
           });
           setStatus("connected");
@@ -102,5 +106,6 @@ export function useLiveRoom(roomId: string, name: string) {
     takeWheel: () => send({ type: "take_wheel" }),
     run: () => send({ type: "run" }),
     sendChat: (text: string) => send({ type: "chat", text }),
+    pickTask: (taskId: string) => send({ type: "pick_task", taskId }),
   };
 }

@@ -42,25 +42,33 @@ func NewHub(tasks TaskSource, runner TaskRunner, log *slog.Logger) *Hub {
 	return h
 }
 
-// CreateRoom создаёт комнату для задачи (код стартует с шаблона).
+// CreateRoom создаёт комнату. taskID необязателен: без него — пустая
+// сессия, задачу выберут участники уже внутри комнаты.
 func (h *Hub) CreateRoom(taskID string) (*Room, error) {
-	task, ok := h.tasks.GetTask(taskID)
-	if !ok {
-		return nil, fmt.Errorf("задача не найдена")
+	var task domain.TaskFull
+	if taskID != "" {
+		t, ok := h.tasks.GetTask(taskID)
+		if !ok {
+			return nil, fmt.Errorf("задача не найдена")
+		}
+		task = t
 	}
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	id := roomID()
-	h.rooms[id] = &Room{
+	room := &Room{
 		ID:         id,
 		Task:       task,
-		content:    task.Template,
 		conns:      make(map[*conn]struct{}),
 		created:    time.Now(),
 		lastActive: time.Now(),
 	}
+	if task.ID != "" {
+		room.content = task.Template
+	}
+	h.rooms[id] = room
 	h.log.Info("live room created", "room", id, "taskId", taskID)
-	return h.rooms[id], nil
+	return room, nil
 }
 
 // GetRoom возвращает комнату по ID.
