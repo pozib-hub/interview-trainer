@@ -1,0 +1,105 @@
+name: Verify Task PR
+
+# Проверка задач из pull request: структура файлов, метаданные,
+# эталонное решение (должно проходить тесты) и шаблон (должен проваливаться).
+# Всё выполняется Go-верификатором backend/cmd/verifytask (тот же vitest-раннер,
+# что и в приложении). Результат — комментарий на PR и метки.
+
+on:
+  pull_request:
+    paths:
+      - "backend/tasks/**"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: verify-task-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    if: github.event.action != 'closed'
+    steps:
+      - name: Чекаут репозитория
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Установить Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+
+      - name: Установить Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Зависимости node-раннера
+        run: npm ci
+        working-directory: backend/runtime
+
+      - name: Собрать верификатор
+        run: go build -o /tmp/verifytask ./cmd/verifytask
+        working-directory: backend
+
+      - name: Определить изменённые задачи
+        id: tasks
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          git fetch origin "$BASE_REF"
+          IDS=$(git diff --name-only "origin/$BASE_REF"...HEAD -- backend/tasks \
+            | grep -E '^backend/tasks/[^/]+/[^/]+/' \
+            | cut -d/ -f2-3 | sort -u | paste -sd, || true)
+          echo "ids=$IDS" >> "$GITHUB_OUTPUT"
+          echo "Изменённые задачи: ${IDS:-нет}"
+
+      - name: Проверить задачи
+        id: run
+        if: steps.tasks.outputs.ids != ''
+        run: |
+          set +e
+          /tmp/verifytask \
+            -tasks ./backend/tasks \
+            -runtime ./backend/runtime \
+            -ids "${{ steps.tasks.outputs.ids }}" > /tmp/report.md
+          code=$?
+          set -e
+          echo "exit=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" -eq 2 ]; then exit 2; fi
+          exit 0
+
+      - name: Пустой отчёт (задач нет)
+        if: steps.tasks.outputs.ids == ''
+        run: echo "🤖 Изменённые задачи не найдены — проверять нечего." > /tmp/report.md
+
+      - name: Прокомментировать PR
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: gh pr comment "$PR_URL" --body-file /tmp/report.md
+
+      - name: Поставить метки
+        if: ${{ !cancelled() && steps.tasks.outputs.ids != '' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          gh label create "task-verified" --description "Задачи в PR проверены автоматически" --color "1B5E20" --force || true
+          gh label create "task-failed" --description "Автопроверка задач нашла проблемы" --color "B71C1C" --force || true
+          if [ "${{ steps.run.outputs.exit }}" = "0" ]; then
+            gh pr edit "$PR_URL" --remove-label "task-failed" --add-label "task-verified" || true
+          else
+            gh pr edit "$PR_URL" --remove-label "task-verified" --add-label "task-failed" || true
+          fi
+
+      - name: Статус проверки
+        if: ${{ !cancelled() && steps.tasks.outputs.ids != '' && steps.run.outputs.exit != '0' }}
+        run: |
+          echo "Верификатор вернул код ${{ steps.run.outputs.exit }} — детали в комментарии на PR."
+          exit 1

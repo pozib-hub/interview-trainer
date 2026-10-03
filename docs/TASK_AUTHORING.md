@@ -652,3 +652,13 @@ test("getResult возвращает true", () => {
 6. **Валидатор** — `make verify-tasks` из корня репозитория: 0 проблем
    (структура 6 файлов, синтаксис шаблона, контракт импортов «шаблон ↔ тесты»,
    для типовых задач — tsc-различение шаблона и эталона)
+7. **CI** — при открытии PR с изменениями в `backend/tasks/**` GitHub Actions
+   (`.github/workflows/verify-task-pr.yml`) автоматически проверит задачи
+   Go-верификатором (`backend/cmd/verifytask`): структура, метаданные,
+   эталонное решение (должно проходить все тесты) и шаблон (должен проваливаться).
+   Результат придёт комментарием на PR с метками `task-verified` / `task-failed`.
+   Локальный прогон того же верификатора:
+   ```bash
+   cd backend && go build -o /tmp/verifytask ./cmd/verifytask
+   /tmp/verifytask -tasks ./tasks -runtime ./runtime -ids "тема/NNN-slug"
+   ```

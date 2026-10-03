@@ -1,20 +1,42 @@
 import { startVitest } from "vitest/node";
-import { readFileSync } from "fs";
+import { readFileSync, realpathSync } from "fs";
 import path from "path";
 
 async function main() {
-  const tempDir = process.argv[2];
+  // realpath обязателен: на macOS tmp-путь приходит через symlink /var -> /private/var,
+  // без него vite в jsdom-окружении падает с "Failed to load url"
+  const tempDir = realpathSync(process.argv[2]);
+  const mode = process.argv[3] || "run";
+  const testFile = process.argv[4] || "tests/test.ts";
   const jsonOut = path.join(tempDir, "result.json");
 
-  const vitest = await startVitest("test", ["tests/test.ts"], {
+  const config = {
     root: tempDir,
     reporters: ["json"],
     outputFile: jsonOut,
     pool: "forks",
     isolate: true,
     testTimeout: 8000,
-    include: ["tests/test.ts"],
-  });
+    include: [testFile],
+    esbuild: { jsx: "automatic" },
+  };
+
+  if (mode === "typecheck") {
+    config.typecheck = {
+      enabled: true,
+      include: ["tests/**"],
+      tsconfig: "tsconfig.json",
+      ignoreSourceErrors: true,
+    };
+  }
+
+  const vitest = await startVitest(
+    "test",
+    [testFile],
+    config,
+    // vite-оверрайды: esbuild — опция vite, а не vitest
+    { esbuild: { jsx: "automatic" } }
+  );
 
   await vitest.close();
   process.stdout.write(readFileSync(jsonOut, "utf8"));

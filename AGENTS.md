@@ -18,6 +18,7 @@
 ```
 backend/
   cmd/server/          точка входа
+  cmd/verifytask/      CLI-верификатор задач для CI (GitHub Actions)
   internal/
     config/            конфиг из env (cleanenv)
     domain/            модели Task, RunResult, AppData, User + MergeAppData
@@ -27,6 +28,7 @@ backend/
     storage/postgres/  pgx-пул, goose-миграции, репозитории users/sessions/app_state
     service/           бизнес-логика (task, run, state, auth)
     proposal/          генерация задач из формы: LLM + валидация + PR на GitHub
+    verify/            проверка задач из PR для CI (структура + прогоны vitest)
     handler/           HTTP-хэндлеры
     server/            chi-роутер, таймауты
   runtime/            node-окружение для тестов (vitest в node_modules)
@@ -63,6 +65,10 @@ npm run build
 
 # Валидация задач (структура, шаблоны, контракт с тестами, tsc для типовых)
 make verify-tasks   # из корня; ожидается «проблем: 0»
+
+# Проверка задач из PR (то же делает GitHub Actions в .github/workflows/verify-task-pr.yml)
+cd backend && go build -o /tmp/verifytask ./cmd/verifytask
+/tmp/verifytask -tasks ./tasks -runtime ./runtime -ids "algorithms/010-fibonacci"
 
 # Всё вместе
 docker compose up -d --build   # frontend: :3000 (nginx), backend: :8080
