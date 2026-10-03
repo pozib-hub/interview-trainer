@@ -4,6 +4,7 @@ import type { TaskSummary } from "@lib/types";
 import TaskTree from "@components/TaskTree";
 import UserMenu from "@components/UserMenu";
 import TaskProposalModal from "@components/TaskProposalModal";
+import LiveSetupModal from "@components/LiveSetupModal";
 import { useResizableLayout, DragHandle } from "@hooks/useResizableLayout";
 import { useAppData } from "@hooks/useAppData";
 import { fetchTopics } from "@lib/taskApi";
@@ -13,6 +14,7 @@ import styles from "./TasksLayout.module.css";
 export default function TasksLayout() {
   const [topics, setTopics] = useState<Record<string, TaskSummary[]>>({});
   const [proposalOpen, setProposalOpen] = useState(false);
+  const [liveOpen, setLiveOpen] = useState(false);
   const [reviewOnly, setReviewOnly] = useState(false);
   const { layout, startDrag, containerRef } = useResizableLayout();
   const app = useAppData();
@@ -59,6 +61,7 @@ export default function TasksLayout() {
         <Spacer />
         <Button size="sm" href="/interview">🎯 Собеседование</Button>
         <Button size="sm" href="/progress" title="Дашборд прогресса: активность, темы, рекомендации">📊 Прогресс</Button>
+        <Button size="sm" onClick={() => setLiveOpen(true)} title="Совместное решение задачи в реальном времени — мок-собеседование">🎙 Лайвкодинг</Button>
         <ThemeToggle />
         <UserMenu />
       </header>
@@ -114,6 +117,7 @@ export default function TasksLayout() {
         </main>
       </div>
       <TaskProposalModal open={proposalOpen} onClose={() => setProposalOpen(false)} />
+      <LiveSetupModal open={liveOpen} onClose={() => setLiveOpen(false)} />
     </div>
   );
 }

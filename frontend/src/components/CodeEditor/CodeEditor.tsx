@@ -12,10 +12,11 @@ interface ICodeEditorProps {
   value: string;
   onChange: (v: string) => void;
   language?: string;
+  readOnly?: boolean;
 }
 
 export default function CodeEditor(props: ICodeEditorProps) {
-  const { value, onChange, language = "typescript" } = props;
+  const { value, onChange, language = "typescript", readOnly = false } = props;
   const { theme } = useTheme();
 
   return (
@@ -37,6 +38,7 @@ export default function CodeEditor(props: ICodeEditorProps) {
             fontFamily: "'SF Mono', Monaco, Menlo, monospace",
             lineNumbers: "on",
             padding: { top: 12 },
+            readOnly,
           }}
         />
       </Suspense>

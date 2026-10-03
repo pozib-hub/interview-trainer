@@ -13,6 +13,7 @@ import (
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/config"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/handler"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/hint"
+	"github.com/pozib-hub/interview-trainer-v2/backend/internal/live"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/proposal"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/review"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/runner"
@@ -99,6 +100,8 @@ func run() error {
 		log,
 	)
 
+	liveHub := live.NewHub(taskScanner, codeRunner, log)
+
 	srv := server.New(server.Deps{
 		Env:           cfg.Env,
 		Addr:          cfg.HTTPAddr,
@@ -107,6 +110,7 @@ func run() error {
 		Users:         users,
 		Sessions:      sessions,
 		SecureCookies: cfg.CookieSecure,
+		LiveHub:       liveHub,
 	})
 
 	errCh := make(chan error, 1)

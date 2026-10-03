@@ -11,6 +11,7 @@ import (
 
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/auth"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/handler"
+	"github.com/pozib-hub/interview-trainer-v2/backend/internal/live"
 	appmw "github.com/pozib-hub/interview-trainer-v2/backend/internal/middleware"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/storage"
 )
@@ -23,6 +24,7 @@ type Deps struct {
 	Users         storage.UserRepository
 	Sessions      storage.SessionRepository
 	SecureCookies bool
+	LiveHub       *live.Hub
 }
 
 func NewRouter(d Deps) http.Handler {
@@ -41,6 +43,10 @@ func NewRouter(d Deps) http.Handler {
 	}
 
 	r.Get("/api/health", d.H.Health)
+
+	// Лайвкодинг: комнаты и websocket (без сессий — доступ по случайному коду).
+	r.Post("/api/live/rooms", d.LiveHub.HandleCreateRoom)
+	r.Get("/ws/live/{roomId}", d.LiveHub.HandleWS)
 
 	r.Group(func(r chi.Router) {
 		r.Use(auth.Middleware(auth.Deps{
