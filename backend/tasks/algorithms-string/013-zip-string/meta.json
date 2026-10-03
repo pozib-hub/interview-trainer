@@ -1,0 +1,12 @@
+{
+  "title": "@Водопад",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-string",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": [
+    "fn"
+  ]
+}

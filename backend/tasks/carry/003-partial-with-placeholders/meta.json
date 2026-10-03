@@ -1,0 +1,7 @@
+{
+  "title": "Частичное применение с плейсхолдерами",
+  "difficulty": "medium",
+  "tags": ["carry", "partial-application", "function"],
+  "language": "typescript",
+  "exports": ["partial"]
+}

@@ -1,0 +1,15 @@
+{
+  "title": "Pipe: цепочка функций слева направо",
+  "difficulty": "hard",
+  "tags": [
+    "lodash",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": [
+    "times",
+    "plus",
+    "subtract",
+    "divide"
+  ]
+}

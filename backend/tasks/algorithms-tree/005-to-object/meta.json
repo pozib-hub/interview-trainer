@@ -1,0 +1,14 @@
+{
+  "title": "to-object",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-tree",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": [
+    "treeFn",
+    "traverse",
+    "treeFn2"
+  ]
+}

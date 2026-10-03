@@ -1,0 +1,9 @@
+{
+  "title": "Тинькофф: сумма пар, flat, Promise.pool",
+  "difficulty": "easy",
+  "tags": [
+    "companies"
+  ],
+  "language": "typescript",
+  "exports": []
+}

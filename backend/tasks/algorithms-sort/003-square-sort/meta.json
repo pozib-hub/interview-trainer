@@ -1,0 +1,13 @@
+{
+  "title": "Сортировка квадратного массива.",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-sort",
+    "array",
+    "sort"
+  ],
+  "language": "typescript",
+  "exports": [
+    "squareSort"
+  ]
+}

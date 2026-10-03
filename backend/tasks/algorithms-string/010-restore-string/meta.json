@@ -1,0 +1,13 @@
+{
+  "title": "Восстановление строки по индексам",
+  "difficulty": "medium",
+  "tags": [
+    "algorithms-string",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": [
+    "restoreString1",
+    "restoreString2"
+  ]
+}

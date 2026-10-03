@@ -1,0 +1,12 @@
+{
+  "title": "Реализовать анaлoг Function.prototype.myBind",
+  "difficulty": "hard",
+  "tags": [
+    "this",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": [
+    "getResult"
+  ]
+}

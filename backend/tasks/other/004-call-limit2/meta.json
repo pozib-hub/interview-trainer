@@ -1,0 +1,11 @@
+{
+  "title": "Функция, вызываемая только один раз",
+  "difficulty": "medium",
+  "tags": [
+    "other"
+  ],
+  "language": "typescript",
+  "exports": [
+    "runonce"
+  ]
+}

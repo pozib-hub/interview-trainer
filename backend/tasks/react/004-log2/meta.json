@@ -1,0 +1,12 @@
+{
+  "title": "Что будет в консоли?",
+  "difficulty": "hard",
+  "tags": [
+    "react"
+  ],
+  "language": "typescript",
+  "exports": [
+    "Parent",
+    "App"
+  ]
+}

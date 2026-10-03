@@ -1,0 +1,8 @@
+.DragHandle:hover,
+.DragHandle:active {
+  background: var(--accent);
+}
+
+.HDrag {
+  /* horizontal variant */
+}

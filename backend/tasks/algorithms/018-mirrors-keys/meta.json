@@ -1,0 +1,12 @@
+{
+  "title": "Дан объект со свойствами без значений",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms"
+  ],
+  "language": "typescript",
+  "exports": [
+    "revertStr",
+    "mirror"
+  ]
+}

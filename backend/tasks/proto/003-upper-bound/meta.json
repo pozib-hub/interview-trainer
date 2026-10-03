@@ -1,0 +1,7 @@
+{
+  "title": "Array.prototype.upperBound: верхняя граница",
+  "difficulty": "medium",
+  "tags": ["proto", "array", "prototype", "binary-search", "metaprogramming"],
+  "language": "typescript",
+  "exports": []
+}

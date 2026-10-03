@@ -1,0 +1,12 @@
+{
+  "title": "shell-sort",
+  "difficulty": "hard",
+  "tags": [
+    "sorts",
+    "sort"
+  ],
+  "language": "typescript",
+  "exports": [
+    "shellSort"
+  ]
+}

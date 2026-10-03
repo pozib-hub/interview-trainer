@@ -1,0 +1,5 @@
+.EditorWrap {
+  flex: 1;
+  overflow: hidden;
+  min-height: 300px;
+}

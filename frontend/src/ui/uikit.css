@@ -1,0 +1,116 @@
+.Btn {
+  padding: 7px 16px;
+  border: 1px solid var(--border);
+  background: var(--bg-softer);
+  color: var(--text);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: 0.15s;
+}
+.Btn:hover {
+  background: var(--border);
+}
+.Btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.BtnPrimary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.BtnPrimary:hover {
+  background: #1f6feb;
+}
+.BtnSm {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+.BtnLg {
+  padding: 10px 20px;
+  font-size: 15px;
+}
+
+.Badge {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: lowercase;
+}
+.BadgeEasy {
+  background: rgba(63, 185, 80, 0.15);
+  color: var(--green);
+}
+.BadgeMedium {
+  background: rgba(210, 153, 34, 0.15);
+  color: var(--yellow);
+}
+.BadgeHard {
+  background: rgba(248, 81, 73, 0.15);
+  color: var(--red);
+}
+
+.Tag {
+  display: inline-block;
+  padding: 1px 6px;
+  background: var(--bg-softer);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-right: 4px;
+}
+
+.Spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.Skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-softer) 25%,
+    var(--border) 50%,
+    var(--bg-softer) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+.SkeletonLine {
+  height: 14px;
+  margin-bottom: 8px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.EmptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+  color: var(--text-muted);
+  font-size: 14px;
+}

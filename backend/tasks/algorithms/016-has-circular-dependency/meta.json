@@ -1,0 +1,13 @@
+{
+  "title": "Определение цикличных зависимостей",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": [
+    "hasCircularDependency",
+    "dfs"
+  ]
+}

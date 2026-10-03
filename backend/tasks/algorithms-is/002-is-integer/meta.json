@@ -1,0 +1,11 @@
+{
+  "title": "Проверка на целое число",
+  "difficulty": "medium",
+  "tags": [
+    "algorithms-is"
+  ],
+  "language": "typescript",
+  "exports": [
+    "isInteger"
+  ]
+}

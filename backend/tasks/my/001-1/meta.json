@@ -1,0 +1,11 @@
+{
+  "title": "Анализ кода: валидность цепочки вызовов",
+  "difficulty": "easy",
+  "tags": [
+    "my",
+    "array",
+    "sort"
+  ],
+  "language": "typescript",
+  "exports": []
+}

@@ -1,0 +1,16 @@
+{
+  "title": "Search a 2D Matrix",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": [
+    "matrix",
+    "findRow",
+    "findNumInRow",
+    "flat",
+    "matrix2"
+  ]
+}

@@ -1,0 +1,125 @@
+.SearchBox {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 10px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--border);
+}
+
+.SearchInput {
+  flex: 1;
+  padding: 6px 10px;
+  background: var(--bg-softer);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.SearchInput:focus {
+  border-color: var(--accent);
+}
+
+.SearchInput::placeholder {
+  color: var(--text-muted);
+}
+
+.SearchClear,
+.FilterBtn {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-softer);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.15s;
+}
+
+.SearchClear:hover,
+.FilterBtn:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.FilterBtnActive {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(47, 129, 247, 0.1);
+}
+
+.SearchCount {
+  padding: 4px 12px;
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--border);
+}
+
+.TopicGroup {
+  margin-bottom: 8px;
+}
+
+.TopicTitle {
+  padding: 8px 12px 4px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.TaskItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+}
+
+.TaskItem:hover {
+  background: var(--bg-softer);
+}
+
+.TaskItemActive {
+  background: var(--bg-softer);
+  border-left-color: var(--accent);
+}
+
+.Dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+
+.DotSolved {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.DotFailed {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.Label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

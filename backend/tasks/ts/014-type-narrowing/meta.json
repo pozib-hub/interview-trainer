@@ -1,0 +1,13 @@
+{
+  "title": "Уберите ошибку",
+  "difficulty": "medium",
+  "tags": [
+    "ts",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": [
+    "App",
+    "login"
+  ]
+}

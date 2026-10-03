@@ -1,0 +1,12 @@
+{
+  "title": "Самое большое число из цифр",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms",
+    "sort"
+  ],
+  "language": "typescript",
+  "exports": [
+    "descendingOrder"
+  ]
+}

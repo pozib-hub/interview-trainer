@@ -1,0 +1,10 @@
+{
+  "title": "Генератор обхода вложенных массивов",
+  "difficulty": "hard",
+  "tags": [
+    "other",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": []
+}

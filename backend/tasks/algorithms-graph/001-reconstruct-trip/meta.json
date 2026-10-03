@@ -1,0 +1,13 @@
+{
+  "title": "{ from: 'Череповец', to: 'Москва' },",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-graph",
+    "array",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": [
+    "reconstructTrip"
+  ]
+}

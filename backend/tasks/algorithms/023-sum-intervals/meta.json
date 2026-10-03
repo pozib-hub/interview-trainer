@@ -1,0 +1,12 @@
+{
+  "title": "Сумма непересекающихся интервалов",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms",
+    "sort"
+  ],
+  "language": "typescript",
+  "exports": [
+    "sumIntervals"
+  ]
+}

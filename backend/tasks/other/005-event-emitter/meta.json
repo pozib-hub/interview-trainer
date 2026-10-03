@@ -1,0 +1,13 @@
+{
+  "title": "Необходимо реализовать класс EventEmitter,",
+  "difficulty": "hard",
+  "tags": [
+    "other",
+    "this"
+  ],
+  "language": "typescript",
+  "exports": [
+    "callback1",
+    "callback2"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Наследование и super: порядок вывода",
+  "difficulty": "hard",
+  "tags": [
+    "this"
+  ],
+  "language": "typescript",
+  "exports": [
+    "getResult"
+  ]
+}

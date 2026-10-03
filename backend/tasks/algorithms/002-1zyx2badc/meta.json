@@ -1,0 +1,14 @@
+{
+  "title": "Шифр: перестановка символов",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms",
+    "array",
+    "sort",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": [
+    "fn"
+  ]
+}

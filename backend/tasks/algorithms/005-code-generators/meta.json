@@ -1,0 +1,13 @@
+{
+  "title": "Генератор кодов для дверей отеля",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": [
+    "shuffle",
+    "createCodesGenerator"
+  ]
+}

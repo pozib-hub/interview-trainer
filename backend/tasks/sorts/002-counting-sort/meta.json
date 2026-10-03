@@ -1,0 +1,13 @@
+{
+  "title": "counting-sort",
+  "difficulty": "hard",
+  "tags": [
+    "sorts",
+    "array",
+    "sort"
+  ],
+  "language": "typescript",
+  "exports": [
+    "countingSort"
+  ]
+}

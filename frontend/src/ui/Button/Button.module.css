@@ -1,0 +1,36 @@
+.Btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 16px;
+  border: 1px solid var(--border);
+  background: var(--bg-softer);
+  color: var(--text);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: 0.15s;
+}
+.Btn:hover {
+  background: var(--border);
+}
+.Btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.Primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.Primary:hover {
+  background: #1f6feb;
+}
+.Sm {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+.Lg {
+  padding: 10px 20px;
+  font-size: 15px;
+}

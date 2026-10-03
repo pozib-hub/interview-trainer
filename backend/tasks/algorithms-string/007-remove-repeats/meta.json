@@ -1,0 +1,11 @@
+{
+  "title": "Удаление дубликатов букв в словах",
+  "difficulty": "medium",
+  "tags": [
+    "algorithms-string"
+  ],
+  "language": "typescript",
+  "exports": [
+    "removeRepeats"
+  ]
+}

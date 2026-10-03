@@ -1,0 +1,10 @@
+{
+  "title": "deep-readonly",
+  "difficulty": "easy",
+  "tags": [
+    "ts",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": []
+}

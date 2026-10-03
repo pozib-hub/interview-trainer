@@ -1,0 +1,11 @@
+{
+  "title": "Необходимо реализовать функцию expect,",
+  "difficulty": "hard",
+  "tags": [
+    "other"
+  ],
+  "language": "typescript",
+  "exports": [
+    "expect"
+  ]
+}

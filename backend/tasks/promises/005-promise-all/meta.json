@@ -1,0 +1,11 @@
+{
+  "title": "Необходимо реализовать функцию promiseAll,",
+  "difficulty": "hard",
+  "tags": [
+    "promises",
+    "array",
+    "async"
+  ],
+  "language": "typescript",
+  "exports": []
+}

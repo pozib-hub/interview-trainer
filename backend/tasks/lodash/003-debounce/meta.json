@@ -1,0 +1,12 @@
+{
+  "title": "Debounce: отложенный вызов",
+  "difficulty": "medium",
+  "tags": [
+    "lodash",
+    "closure"
+  ],
+  "language": "typescript",
+  "exports": [
+    "debounce"
+  ]
+}

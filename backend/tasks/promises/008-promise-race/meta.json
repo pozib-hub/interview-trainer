@@ -1,0 +1,11 @@
+{
+  "title": "Promise.race: первый завершённый",
+  "difficulty": "medium",
+  "tags": [
+    "promises",
+    "array",
+    "async"
+  ],
+  "language": "typescript",
+  "exports": []
+}

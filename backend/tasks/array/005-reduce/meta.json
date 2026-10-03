@@ -1,0 +1,11 @@
+{
+  "title": "Необходимо реализовать метод myReduce для массива,",
+  "difficulty": "hard",
+  "tags": [
+    "array",
+    "this",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": []
+}

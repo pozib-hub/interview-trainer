@@ -1,0 +1,7 @@
+{
+  "title": "Создайте объект из двух массивов",
+  "difficulty": "easy",
+  "tags": ["obj", "array", "object"],
+  "language": "typescript",
+  "exports": ["createObject"]
+}

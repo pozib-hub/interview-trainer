@@ -1,0 +1,13 @@
+{
+  "title": "6",
+  "difficulty": "hard",
+  "tags": [
+    "event-loop",
+    "async",
+    "closure"
+  ],
+  "language": "typescript",
+  "exports": [
+    "run"
+  ]
+}

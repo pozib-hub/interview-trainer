@@ -1,0 +1,13 @@
+{
+  "title": "Повтор fetch при ошибке",
+  "difficulty": "hard",
+  "tags": [
+    "promises",
+    "async"
+  ],
+  "language": "typescript",
+  "exports": [
+    "request",
+    "fetchData"
+  ]
+}

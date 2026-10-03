@@ -1,0 +1,11 @@
+{
+  "title": "Есть два отсортированных массива.",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms"
+  ],
+  "language": "typescript",
+  "exports": [
+    "diff"
+  ]
+}

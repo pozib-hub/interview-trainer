@@ -1,0 +1,7 @@
+{
+  "title": "Бесконечный объект метода",
+  "difficulty": "medium",
+  "tags": ["obj", "proxy", "metaprogramming"],
+  "language": "typescript",
+  "exports": ["createInfiniteObject"]
+}

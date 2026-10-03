@@ -1,0 +1,14 @@
+{
+  "title": "fn()",
+  "difficulty": "hard",
+  "tags": [
+    "companies",
+    "async",
+    "closure"
+  ],
+  "language": "typescript",
+  "exports": [
+    "sendMetrics",
+    "anyFn"
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "title": "String.prototype.replicate: повторение строки",
+  "difficulty": "easy",
+  "tags": ["proto", "string", "prototype", "metaprogramming"],
+  "language": "typescript",
+  "exports": []
+}

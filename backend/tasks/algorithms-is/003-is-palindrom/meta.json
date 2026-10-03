@@ -1,0 +1,12 @@
+{
+  "title": "Проверка строки на палиндром",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-is"
+  ],
+  "language": "typescript",
+  "exports": [
+    "isSymbol",
+    "isPalindrome"
+  ]
+}

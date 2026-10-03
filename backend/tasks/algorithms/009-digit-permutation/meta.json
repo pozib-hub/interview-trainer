@@ -1,0 +1,14 @@
+{
+  "title": "@Яндекс - алго секция",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms",
+    "array",
+    "sort"
+  ],
+  "language": "typescript",
+  "exports": [
+    "digitPermutation",
+    "digitPermutation2"
+  ]
+}

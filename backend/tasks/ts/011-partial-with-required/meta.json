@@ -1,0 +1,10 @@
+{
+  "title": "partial-with-required",
+  "difficulty": "medium",
+  "tags": [
+    "ts",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": []
+}

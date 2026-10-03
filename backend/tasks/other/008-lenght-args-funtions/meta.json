@@ -1,0 +1,12 @@
+{
+  "title": "Подсчёт аргументов функции",
+  "difficulty": "medium",
+  "tags": [
+    "other"
+  ],
+  "language": "typescript",
+  "exports": [
+    "countArgsWrapper",
+    "example"
+  ]
+}

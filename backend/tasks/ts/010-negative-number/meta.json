@@ -1,0 +1,10 @@
+{
+  "title": "Тип для отрицательных чисел",
+  "difficulty": "medium",
+  "tags": [
+    "ts",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": []
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Реализовать свой useMemo",
+  "difficulty": "medium",
+  "tags": [
+    "react"
+  ],
+  "language": "typescript",
+  "exports": [
+    "areDepsEqual"
+  ]
+}

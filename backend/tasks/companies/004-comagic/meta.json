@@ -1,0 +1,15 @@
+{
+  "title": "comagic",
+  "difficulty": "hard",
+  "tags": [
+    "companies",
+    "async",
+    "this",
+    "closure"
+  ],
+  "language": "typescript",
+  "exports": [
+    "debounce",
+    "fetchUrl"
+  ]
+}

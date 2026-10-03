@@ -1,0 +1,12 @@
+{
+  "title": "Что будет в консоли?",
+  "difficulty": "medium",
+  "tags": [
+    "this",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": [
+    "getResult"
+  ]
+}

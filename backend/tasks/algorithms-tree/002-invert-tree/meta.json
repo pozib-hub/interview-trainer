@@ -1,0 +1,13 @@
+{
+  "title": "Инвертировать бинарное дерево» Invert Binary Tree)",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-tree",
+    "this"
+  ],
+  "language": "typescript",
+  "exports": [
+    "invertTreeRecurs",
+    "invertTreeQueue"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "title": "Замена подстроки",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-string"
+  ],
+  "language": "typescript",
+  "exports": [
+    "replaceSubstring",
+    "replaceSubstring2",
+    "replaceSubstring3",
+    "replaceSubstring4",
+    "replaceSubstring5"
+  ]
+}

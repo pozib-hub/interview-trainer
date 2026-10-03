@@ -1,0 +1,15 @@
+{
+  "title": "Retry с задержкой между попытками",
+  "difficulty": "hard",
+  "tags": [
+    "promises",
+    "async",
+    "closure"
+  ],
+  "language": "typescript",
+  "exports": [
+    "test",
+    "retry",
+    "request"
+  ]
+}

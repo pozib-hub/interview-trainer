@@ -1,0 +1,11 @@
+{
+  "title": "Уникальные подряд идущие элементы",
+  "difficulty": "medium",
+  "tags": [
+    "algorithms"
+  ],
+  "language": "typescript",
+  "exports": [
+    "func"
+  ]
+}

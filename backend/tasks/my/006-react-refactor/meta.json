@@ -1,0 +1,13 @@
+{
+  "title": "react-refactor",
+  "difficulty": "hard",
+  "tags": [
+    "my",
+    "async"
+  ],
+  "language": "typescript",
+  "exports": [
+    "Game",
+    "loadGame"
+  ]
+}

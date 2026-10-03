@@ -1,0 +1,10 @@
+{
+  "title": "Proxy: преобразование в строку",
+  "difficulty": "hard",
+  "tags": [
+    "obj",
+    "this"
+  ],
+  "language": "typescript",
+  "exports": []
+}

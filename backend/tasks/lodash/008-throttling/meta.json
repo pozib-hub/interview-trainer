@@ -1,0 +1,10 @@
+{
+  "title": "Throttle: ограничение частоты вызова",
+  "difficulty": "hard",
+  "tags": [
+    "lodash",
+    "closure"
+  ],
+  "language": "typescript",
+  "exports": []
+}

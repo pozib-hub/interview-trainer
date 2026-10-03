@@ -1,0 +1,12 @@
+{
+  "title": "@Яндекс",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms"
+  ],
+  "language": "typescript",
+  "exports": [
+    "intersection",
+    "intersection2"
+  ]
+}

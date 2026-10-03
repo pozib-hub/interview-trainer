@@ -1,0 +1,15 @@
+{
+  "title": "Compose: композиция функций",
+  "difficulty": "hard",
+  "tags": [
+    "lodash",
+    "array",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": [
+    "square",
+    "times2",
+    "sum"
+  ]
+}

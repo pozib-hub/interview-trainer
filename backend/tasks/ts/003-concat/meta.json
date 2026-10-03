@@ -1,0 +1,10 @@
+{
+  "title": "Test Cases",
+  "difficulty": "easy",
+  "tags": [
+    "ts",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": []
+}

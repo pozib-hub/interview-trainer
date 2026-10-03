@@ -1,0 +1,13 @@
+{
+  "title": "My: хук useCounter",
+  "difficulty": "hard",
+  "tags": [
+    "my",
+    "react"
+  ],
+  "language": "tsx",
+  "exports": [
+    "useCounter",
+    "App"
+  ]
+}

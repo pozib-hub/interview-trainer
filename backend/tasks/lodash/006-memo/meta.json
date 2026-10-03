@@ -1,0 +1,11 @@
+{
+  "title": "Memo: кэширование результатов функции",
+  "difficulty": "hard",
+  "tags": [
+    "lodash"
+  ],
+  "language": "typescript",
+  "exports": [
+    "pow"
+  ]
+}

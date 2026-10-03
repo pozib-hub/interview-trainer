@@ -1,0 +1,11 @@
+{
+  "title": "Что будет в консоли?",
+  "difficulty": "easy",
+  "tags": [
+    "scope"
+  ],
+  "language": "typescript",
+  "exports": [
+    "getResult"
+  ]
+}

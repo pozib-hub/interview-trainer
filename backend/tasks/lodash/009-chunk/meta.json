@@ -1,0 +1,12 @@
+{
+  "title": "Chunk: разбить массив на части",
+  "difficulty": "easy",
+  "tags": [
+    "lodash",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": [
+    "chunk"
+  ]
+}

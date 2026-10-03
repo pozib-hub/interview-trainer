@@ -1,0 +1,10 @@
+{
+  "title": "Получение значения по пути объекта",
+  "difficulty": "hard",
+  "tags": [
+    "lodash",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": []
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Первый уникальный символ в строке",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-string"
+  ],
+  "language": "typescript",
+  "exports": [
+    "firstUniqChar"
+  ]
+}

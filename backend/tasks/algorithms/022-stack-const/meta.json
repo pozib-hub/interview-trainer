@@ -1,0 +1,10 @@
+{
+  "title": "Стек за константное время O(1)",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms",
+    "this"
+  ],
+  "language": "typescript",
+  "exports": []
+}

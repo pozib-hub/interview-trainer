@@ -1,0 +1,13 @@
+{
+  "title": "Задержка на N миллисекунд",
+  "difficulty": "easy",
+  "tags": [
+    "promises",
+    "async",
+    "closure"
+  ],
+  "language": "typescript",
+  "exports": [
+    "delay"
+  ]
+}

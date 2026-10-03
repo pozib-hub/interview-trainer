@@ -1,0 +1,65 @@
+.Overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.Panel {
+  width: 100%;
+  max-width: 360px;
+  padding: 24px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.Form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.Input {
+  padding: 9px 12px;
+  background: var(--bg-softer);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.Input:focus {
+  border-color: var(--accent);
+}
+
+.Input::placeholder {
+  color: var(--text-muted);
+}
+
+.Switch {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.SwitchBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.SwitchBtn:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,12 @@
+{
+  "title": "Реализуйте функцию findAnagrams(words),",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-string",
+    "sort"
+  ],
+  "language": "typescript",
+  "exports": [
+    "findAnagrams"
+  ]
+}

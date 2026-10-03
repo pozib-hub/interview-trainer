@@ -1,0 +1,7 @@
+{
+  "title": "Инвертирование объекта",
+  "difficulty": "medium",
+  "tags": ["obj", "object", "transformation"],
+  "language": "typescript",
+  "exports": ["invertObject"]
+}

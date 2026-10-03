@@ -1,0 +1,13 @@
+{
+  "title": "Преобразование в camelCase",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-string",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": [
+    "toCamelCase",
+    "toCamelCase2"
+  ]
+}

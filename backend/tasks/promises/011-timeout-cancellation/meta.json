@@ -1,0 +1,13 @@
+{
+  "title": "Timeout Cancellation: отмена отложенного вызова",
+  "difficulty": "easy",
+  "tags": [
+    "promises",
+    "timer",
+    "closure"
+  ],
+  "language": "typescript",
+  "exports": [
+    "cancellable"
+  ]
+}

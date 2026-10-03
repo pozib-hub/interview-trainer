@@ -1,0 +1,12 @@
+{
+  "title": "promise-all-settled",
+  "difficulty": "hard",
+  "tags": [
+    "promises",
+    "array",
+    "async",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": []
+}

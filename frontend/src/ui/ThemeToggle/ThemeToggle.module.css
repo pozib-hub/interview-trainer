@@ -1,0 +1,20 @@
+.ThemeToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-softer);
+  color: var(--text);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.15s;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+}
+
+.ThemeToggle:hover {
+  background: var(--border);
+}

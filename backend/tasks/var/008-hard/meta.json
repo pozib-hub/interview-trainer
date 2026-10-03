@@ -1,0 +1,12 @@
+{
+  "title": "hard",
+  "difficulty": "medium",
+  "tags": [
+    "var",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": [
+    "getResult"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "title": "Фильтрация falsy значений объекта",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": []
+}

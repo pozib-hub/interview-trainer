@@ -1,0 +1,12 @@
+{
+  "title": "descening-order",
+  "difficulty": "hard",
+  "tags": [
+    "my",
+    "sort"
+  ],
+  "language": "typescript",
+  "exports": [
+    "descendingOrder"
+  ]
+}

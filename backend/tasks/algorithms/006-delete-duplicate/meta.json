@@ -1,0 +1,10 @@
+{
+  "title": "Удаление дубликатов из массива",
+  "difficulty": "medium",
+  "tags": [
+    "algorithms",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": []
+}

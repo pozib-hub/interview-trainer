@@ -1,0 +1,13 @@
+{
+  "title": "Ограничение количества вызовов функции",
+  "difficulty": "hard",
+  "tags": [
+    "other",
+    "closure"
+  ],
+  "language": "typescript",
+  "exports": [
+    "calledFn",
+    "callbackAfterCallLimit"
+  ]
+}

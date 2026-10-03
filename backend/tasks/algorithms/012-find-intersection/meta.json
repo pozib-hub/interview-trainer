@@ -1,0 +1,13 @@
+{
+  "title": "Пересечение двух массивов",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": [
+    "findIntersection",
+    "findIntersection2"
+  ]
+}

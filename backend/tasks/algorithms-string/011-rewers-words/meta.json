@@ -1,0 +1,13 @@
+{
+  "title": "Реверс букв в каждом слове строки",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-string",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": [
+    "reverseWords",
+    "reverseWordsMap"
+  ]
+}

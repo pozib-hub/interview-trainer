@@ -1,0 +1,25 @@
+{
+  "title": "Обёртка для ненадёжного resolver",
+  "difficulty": "hard",
+  "tags": [
+    "promises",
+    "async",
+    "this"
+  ],
+  "language": "typescript",
+  "exports": [
+    "noop",
+    "getThen",
+    "tryCallOne",
+    "tryCallTwo",
+    "Promise",
+    "safeThen",
+    "handle",
+    "handleResolved",
+    "resolve",
+    "reject",
+    "finale",
+    "Handler",
+    "doResolve"
+  ]
+}

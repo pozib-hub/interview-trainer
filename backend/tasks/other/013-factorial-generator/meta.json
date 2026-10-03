@@ -1,0 +1,7 @@
+{
+  "title": "Генератор факториала",
+  "difficulty": "easy",
+  "tags": ["other", "generator", "math"],
+  "language": "typescript",
+  "exports": ["factorial"]
+}

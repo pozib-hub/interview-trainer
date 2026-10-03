@@ -1,0 +1,13 @@
+{
+  "title": "Задача \"Анаграмма\"",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-is",
+    "sort"
+  ],
+  "language": "typescript",
+  "exports": [
+    "isAnagramSort",
+    "isAnagram"
+  ]
+}

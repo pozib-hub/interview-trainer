@@ -1,0 +1,12 @@
+{
+  "title": "Date.prototype.nextDay: следующий день",
+  "difficulty": "easy",
+  "tags": [
+    "proto",
+    "date",
+    "prototype",
+    "metaprogramming"
+  ],
+  "language": "typescript",
+  "exports": []
+}

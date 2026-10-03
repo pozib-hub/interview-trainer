@@ -1,0 +1,11 @@
+{
+  "title": "1. Будет ли выполнятся инкремент и c.counter = 0;",
+  "difficulty": "medium",
+  "tags": [
+    "obj"
+  ],
+  "language": "typescript",
+  "exports": [
+    "Count"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "title": "bubble-sort",
+  "difficulty": "medium",
+  "tags": [
+    "sorts",
+    "sort"
+  ],
+  "language": "typescript",
+  "exports": [
+    "bubbleSort"
+  ]
+}

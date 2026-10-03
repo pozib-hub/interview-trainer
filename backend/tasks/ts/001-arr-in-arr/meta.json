@@ -1,0 +1,11 @@
+{
+  "title": "Сделать тип для arr",
+  "difficulty": "easy",
+  "tags": [
+    "ts",
+    "array",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": []
+}

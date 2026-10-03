@@ -1,0 +1,13 @@
+{
+  "title": "Отмена fetch через AbortController",
+  "difficulty": "hard",
+  "tags": [
+    "promises",
+    "async",
+    "closure"
+  ],
+  "language": "typescript",
+  "exports": [
+    "fetchData"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "title": "5",
+  "difficulty": "medium",
+  "tags": [
+    "compare"
+  ],
+  "language": "typescript",
+  "exports": [
+    "f1"
+  ]
+}

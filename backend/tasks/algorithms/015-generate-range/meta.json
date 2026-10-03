@@ -1,0 +1,13 @@
+{
+  "title": "Последовательность чисел от A до B",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": [
+    "range",
+    "range2"
+  ]
+}

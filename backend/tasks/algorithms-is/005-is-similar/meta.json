@@ -1,0 +1,14 @@
+{
+  "title": "Функция, которая проверяет совпадение массивов",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-is",
+    "sort"
+  ],
+  "language": "typescript",
+  "exports": [
+    "isSimilar",
+    "isSimilar3",
+    "isSimilar2"
+  ]
+}

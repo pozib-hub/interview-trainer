@@ -1,0 +1,13 @@
+{
+  "title": "Наибольший общий префикс строк",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-string",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": [
+    "getLongestCommonPrefix",
+    "getLongestCommonPrefix2"
+  ]
+}

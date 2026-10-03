@@ -1,0 +1,10 @@
+{
+  "title": "Реализовать очередь с помощью двух стеков",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms",
+    "this"
+  ],
+  "language": "typescript",
+  "exports": []
+}

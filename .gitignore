@@ -1,0 +1,29 @@
+# Go
+backend/bin/
+backend/server
+*.test
+*.out
+
+# Node
+node_modules/
+dist/
+*.local
+
+# Env
+.env
+
+# IDE / OS
+.DS_Store
+.idea/
+.vscode/
+*.log
+backend/runtime/.npmrc
+frontend/.npmrc
+backend/certs/
+frontend/certs/
+
+# E2E audit artifacts
+scripts/e2e-audit/results/
+scripts/e2e-audit/shots/
+scripts/e2e-audit/plan.json
+scripts/e2e-audit/.npmrc

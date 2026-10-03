@@ -1,0 +1,12 @@
+{
+  "title": "selection-sort",
+  "difficulty": "medium",
+  "tags": [
+    "sorts",
+    "sort"
+  ],
+  "language": "typescript",
+  "exports": [
+    "selectionSort"
+  ]
+}

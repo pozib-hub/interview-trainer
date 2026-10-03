@@ -1,0 +1,11 @@
+{
+  "title": "1",
+  "difficulty": "medium",
+  "tags": [
+    "algorithms"
+  ],
+  "language": "typescript",
+  "exports": [
+    "fn"
+  ]
+}

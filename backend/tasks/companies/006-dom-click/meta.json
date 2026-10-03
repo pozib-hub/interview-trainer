@@ -1,0 +1,12 @@
+{
+  "title": "dom-click",
+  "difficulty": "hard",
+  "tags": [
+    "companies",
+    "async"
+  ],
+  "language": "typescript",
+  "exports": [
+    "desceningOrder"
+  ]
+}

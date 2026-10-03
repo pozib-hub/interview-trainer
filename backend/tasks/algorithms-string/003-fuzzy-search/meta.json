@@ -1,0 +1,11 @@
+{
+  "title": "Задача — реализовать функцию для проверки,",
+  "difficulty": "medium",
+  "tags": [
+    "algorithms-string"
+  ],
+  "language": "typescript",
+  "exports": [
+    "fuzzySearch"
+  ]
+}

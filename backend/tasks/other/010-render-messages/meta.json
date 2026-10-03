@@ -1,0 +1,11 @@
+{
+  "title": "Рендер сообщений по порядку id",
+  "difficulty": "hard",
+  "tags": [
+    "other",
+    "types",
+    "closure"
+  ],
+  "language": "typescript",
+  "exports": []
+}

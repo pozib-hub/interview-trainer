@@ -1,0 +1,11 @@
+{
+  "title": "Самая длинная подстрока без повторов",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-string"
+  ],
+  "language": "typescript",
+  "exports": [
+    "lengthOfLongestSubstring"
+  ]
+}

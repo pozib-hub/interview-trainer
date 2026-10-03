@@ -1,0 +1,13 @@
+{
+  "title": "дана функция, нужно сделать ее чистой",
+  "difficulty": "hard",
+  "tags": [
+    "other",
+    "async"
+  ],
+  "language": "typescript",
+  "exports": [
+    "add",
+    "fetchData"
+  ]
+}

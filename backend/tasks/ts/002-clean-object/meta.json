@@ -1,0 +1,10 @@
+{
+  "title": "Очистка объекта от falsy значений",
+  "difficulty": "hard",
+  "tags": [
+    "ts",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": []
+}

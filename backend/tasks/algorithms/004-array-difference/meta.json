@@ -1,0 +1,13 @@
+{
+  "title": "Разность двух массивов",
+  "difficulty": "medium",
+  "tags": [
+    "algorithms",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": [
+    "func",
+    "func2"
+  ]
+}

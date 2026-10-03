@@ -1,0 +1,12 @@
+{
+  "title": "Необходимо реализовать функцию isEqualDeep,",
+  "difficulty": "hard",
+  "tags": [
+    "lodash",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": [
+    "isObject"
+  ]
+}

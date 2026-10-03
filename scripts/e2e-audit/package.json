@@ -1,0 +1,15 @@
+{
+  "name": "interview-trainer-e2e-audit",
+  "private": true,
+  "description": "Playwright E2E-аудит задач: прогон решения и шаблона каждой задачи через UI",
+  "scripts": {
+    "plan": "node gen-plan.js > plan.json",
+    "audit": "node audit.js plan.json run",
+    "audit:api": "node runapi.js",
+    "verify": "node verify-tasks.js",
+    "check:templates": "node check-templates.js"
+  },
+  "dependencies": {
+    "playwright": "1.54.2"
+  }
+}

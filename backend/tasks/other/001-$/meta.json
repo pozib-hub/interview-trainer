@@ -1,0 +1,11 @@
+{
+  "title": "jQuery-подобная цепочка вызовов",
+  "difficulty": "hard",
+  "tags": [
+    "other"
+  ],
+  "language": "typescript",
+  "exports": [
+    "$"
+  ]
+}

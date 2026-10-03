@@ -1,0 +1,7 @@
+{
+  "title": "Array.prototype.forEach: своя реализация",
+  "difficulty": "medium",
+  "tags": ["proto", "array", "prototype", "metaprogramming"],
+  "language": "typescript",
+  "exports": []
+}

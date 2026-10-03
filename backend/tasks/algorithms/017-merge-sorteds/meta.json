@@ -1,0 +1,11 @@
+{
+  "title": "Слияние двух отсортированных массивов",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms"
+  ],
+  "language": "typescript",
+  "exports": [
+    "merge"
+  ]
+}

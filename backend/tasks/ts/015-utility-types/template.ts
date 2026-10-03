@@ -1,0 +1,10 @@
+export type MyRecord<K extends keyof any, T> = any;
+export type MyOmit<T, K extends keyof T> = any;
+export type MyPick<T, K extends keyof T> = any;
+export type MyPartial<T> = any;
+export type MyRequired<T> = any;
+export type MyReadonly<T> = any;
+export type MyExclude<T, U> = any;
+export type MyExtract<T, U> = any;
+export type MyReturnType<T> = any;
+export type MyInstanceType<T> = any;

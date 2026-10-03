@@ -1,0 +1,11 @@
+{
+  "title": "4",
+  "difficulty": "easy",
+  "tags": [
+    "var"
+  ],
+  "language": "typescript",
+  "exports": [
+    "getResult"
+  ]
+}

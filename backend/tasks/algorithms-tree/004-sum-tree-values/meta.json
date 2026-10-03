@@ -1,0 +1,15 @@
+{
+  "title": "Реализовать функцию sumTree,",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-tree",
+    "array",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": [
+    "sumTreeValuesStack",
+    "sumTreeValuesRecurs1",
+    "sumTreeValuesRecurs2"
+  ]
+}

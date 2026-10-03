@@ -1,0 +1,10 @@
+{
+  "title": "Реализовать свой Event Emitter",
+  "difficulty": "hard",
+  "tags": [
+    "other",
+    "this"
+  ],
+  "language": "typescript",
+  "exports": []
+}

@@ -1,0 +1,9 @@
+{
+  "title": "Получение свойства объекта по пути",
+  "difficulty": "medium",
+  "tags": [
+    "ts"
+  ],
+  "language": "typescript",
+  "exports": []
+}

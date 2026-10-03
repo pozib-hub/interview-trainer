@@ -1,0 +1,12 @@
+{
+  "title": "Дано бинарное дерево:",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-tree",
+    "this"
+  ],
+  "language": "typescript",
+  "exports": [
+    "sumInRange"
+  ]
+}

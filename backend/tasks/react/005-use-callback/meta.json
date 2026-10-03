@@ -1,0 +1,11 @@
+{
+  "title": "Реализовать свой useCallback",
+  "difficulty": "medium",
+  "tags": [
+    "react"
+  ],
+  "language": "typescript",
+  "exports": [
+    "areDepsEqual"
+  ]
+}

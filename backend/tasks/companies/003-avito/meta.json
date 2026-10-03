@@ -1,0 +1,18 @@
+{
+  "title": "спрашивают знания по core JS и дают задачки",
+  "difficulty": "hard",
+  "tags": [
+    "companies",
+    "async",
+    "this",
+    "closure"
+  ],
+  "language": "typescript",
+  "exports": [
+    "execute",
+    "modifyItemData",
+    "printItemData",
+    "checkOrder",
+    "asyncFn"
+  ]
+}

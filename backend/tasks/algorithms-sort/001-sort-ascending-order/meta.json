@@ -1,0 +1,13 @@
+{
+  "title": "Дан массив аг - [1, 8, 3, 9, 12, 13, 2, 5, 6],",
+  "difficulty": "medium",
+  "tags": [
+    "algorithms-sort",
+    "array",
+    "sort"
+  ],
+  "language": "typescript",
+  "exports": [
+    "sortAscendingOrder"
+  ]
+}

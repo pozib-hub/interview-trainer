@@ -1,0 +1,13 @@
+{
+  "title": "Что будет в консоли?",
+  "difficulty": "hard",
+  "tags": [
+    "obj"
+  ],
+  "language": "typescript",
+  "exports": [
+    "f",
+    "f1",
+    "f2"
+  ]
+}

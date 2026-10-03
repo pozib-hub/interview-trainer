@@ -1,0 +1,10 @@
+{
+  "title": "utility-types",
+  "difficulty": "hard",
+  "tags": [
+    "ts",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": []
+}

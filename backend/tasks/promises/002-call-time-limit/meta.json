@@ -1,0 +1,15 @@
+{
+  "title": "Тайм-лимит для async функции",
+  "difficulty": "hard",
+  "tags": [
+    "promises",
+    "async",
+    "types",
+    "closure"
+  ],
+  "language": "typescript",
+  "exports": [
+    "fn",
+    "fn2"
+  ]
+}

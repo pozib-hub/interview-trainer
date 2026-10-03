@@ -1,0 +1,12 @@
+{
+  "title": "min-max",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms"
+  ],
+  "language": "typescript",
+  "exports": [
+    "findMin",
+    "findMax"
+  ]
+}

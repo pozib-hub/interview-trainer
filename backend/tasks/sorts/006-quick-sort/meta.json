@@ -1,0 +1,13 @@
+{
+  "title": "quick-sort",
+  "difficulty": "medium",
+  "tags": [
+    "sorts",
+    "array",
+    "sort"
+  ],
+  "language": "typescript",
+  "exports": [
+    "quickSort"
+  ]
+}

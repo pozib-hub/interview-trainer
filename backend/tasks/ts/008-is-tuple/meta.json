@@ -1,0 +1,10 @@
+{
+  "title": "is-tuple",
+  "difficulty": "medium",
+  "tags": [
+    "ts",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": []
+}

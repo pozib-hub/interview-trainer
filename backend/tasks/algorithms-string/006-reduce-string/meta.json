@@ -1,0 +1,11 @@
+{
+  "title": "reduce-string",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-string"
+  ],
+  "language": "typescript",
+  "exports": [
+    "reduceString"
+  ]
+}

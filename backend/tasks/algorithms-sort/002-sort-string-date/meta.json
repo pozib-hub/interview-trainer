@@ -1,0 +1,12 @@
+{
+  "title": "Отсортировать массив объектов по дате",
+  "difficulty": "medium",
+  "tags": [
+    "algorithms-sort",
+    "sort"
+  ],
+  "language": "typescript",
+  "exports": [
+    "sortDates"
+  ]
+}

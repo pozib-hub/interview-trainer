@@ -1,0 +1,16 @@
+{
+  "title": "- Название компании: Контур",
+  "difficulty": "hard",
+  "tags": [
+    "companies",
+    "array",
+    "async",
+    "closure"
+  ],
+  "language": "typescript",
+  "exports": [
+    "sayWelcome",
+    "doAsync",
+    "showFullName"
+  ]
+}

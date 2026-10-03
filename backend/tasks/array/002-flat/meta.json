@@ -1,0 +1,13 @@
+{
+  "title": "Необходимо реализовать метод flat для массива,",
+  "difficulty": "hard",
+  "tags": [
+    "array",
+    "this",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": [
+    "flatten"
+  ]
+}

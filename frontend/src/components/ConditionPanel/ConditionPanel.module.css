@@ -1,0 +1,37 @@
+.Condition {
+  padding: 20px;
+}
+
+.Condition h1,
+.Condition h2,
+.Condition h3 {
+  margin-top: 1.2em;
+}
+
+.Condition pre {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  overflow-x: auto;
+  font-size: 13px;
+}
+
+.Condition code {
+  font-family: "SF Mono", Monaco, Menlo, monospace;
+}
+
+.Condition p code {
+  background: var(--bg-softer);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.HintBlock {
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--bg-softer);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}

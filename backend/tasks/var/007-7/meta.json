@@ -1,0 +1,11 @@
+{
+  "title": "7",
+  "difficulty": "medium",
+  "tags": [
+    "var"
+  ],
+  "language": "typescript",
+  "exports": [
+    "getResult"
+  ]
+}

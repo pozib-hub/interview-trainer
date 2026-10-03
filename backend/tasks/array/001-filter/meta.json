@@ -1,0 +1,11 @@
+{
+  "title": "Необходимо реализовать метод filter для массива,",
+  "difficulty": "hard",
+  "tags": [
+    "array",
+    "this",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": []
+}

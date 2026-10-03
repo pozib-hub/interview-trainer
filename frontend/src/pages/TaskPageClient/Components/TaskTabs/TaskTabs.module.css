@@ -1,0 +1,23 @@
+.Tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-soft);
+  flex-shrink: 0;
+}
+
+.Tab {
+  padding: 8px 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+
+.Tab:hover {
+  color: var(--text);
+}
+
+.TabActive {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}

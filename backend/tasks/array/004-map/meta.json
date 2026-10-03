@@ -1,0 +1,11 @@
+{
+  "title": "Необходимо реализовать метод map для массива,",
+  "difficulty": "medium",
+  "tags": [
+    "array",
+    "this",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": []
+}

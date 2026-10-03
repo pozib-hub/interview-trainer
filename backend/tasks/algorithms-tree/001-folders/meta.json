@@ -1,0 +1,12 @@
+{
+  "title": "Дерево файлов и папок",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-tree",
+    "types"
+  ],
+  "language": "typescript",
+  "exports": [
+    "renderTree"
+  ]
+}

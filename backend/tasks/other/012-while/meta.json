@@ -1,0 +1,10 @@
+{
+  "title": "Что будет ?",
+  "difficulty": "medium",
+  "tags": [
+    "other",
+    "closure"
+  ],
+  "language": "typescript",
+  "exports": []
+}

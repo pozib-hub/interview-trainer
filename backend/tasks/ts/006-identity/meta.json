@@ -1,0 +1,9 @@
+{
+  "title": "Типизировать функцию identity",
+  "difficulty": "medium",
+  "tags": [
+    "ts"
+  ],
+  "language": "typescript",
+  "exports": []
+}

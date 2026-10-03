@@ -1,0 +1,13 @@
+{
+  "title": "Преобразование массива в строку диапазонов",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms",
+    "array",
+    "sort"
+  ],
+  "language": "typescript",
+  "exports": [
+    "range"
+  ]
+}

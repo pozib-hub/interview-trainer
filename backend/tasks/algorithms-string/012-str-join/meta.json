@@ -1,0 +1,14 @@
+{
+  "title": "Склейка строк через разделитель",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-string",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": [
+    "strJoin2",
+    "strJoin3",
+    "strJoin"
+  ]
+}

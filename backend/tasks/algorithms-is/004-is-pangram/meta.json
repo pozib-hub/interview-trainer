@@ -1,0 +1,13 @@
+{
+  "title": "Проверка строки на панграмму",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms-is"
+  ],
+  "language": "typescript",
+  "exports": [
+    "isPangram",
+    "isPangramByObj",
+    "isPangramSet"
+  ]
+}

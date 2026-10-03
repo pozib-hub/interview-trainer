@@ -1,0 +1,30 @@
+.HistoryItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.HistoryItem:last-child {
+  border-bottom: none;
+}
+
+.HistoryNum {
+  color: var(--text-muted);
+}
+
+.HistoryName {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.HistoryStatusPass {
+  color: var(--green);
+}
+
+.HistoryStatusFail {
+  color: var(--red);
+}

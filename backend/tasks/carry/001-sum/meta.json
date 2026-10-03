@@ -1,0 +1,11 @@
+{
+  "title": "Каррирование суммы",
+  "difficulty": "hard",
+  "tags": [
+    "carry"
+  ],
+  "language": "typescript",
+  "exports": [
+    "sum"
+  ]
+}

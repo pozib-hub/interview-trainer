@@ -1,0 +1,12 @@
+{
+  "title": "Написать ф-ию findMaximumAbsoluteDifference",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms"
+  ],
+  "language": "typescript",
+  "exports": [
+    "findMaximumAbsoluteDifference",
+    "findMaximumAbsoluteDifference2"
+  ]
+}

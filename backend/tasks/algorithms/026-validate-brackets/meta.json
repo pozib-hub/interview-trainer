@@ -1,0 +1,11 @@
+{
+  "title": "validate-brackets",
+  "difficulty": "hard",
+  "tags": [
+    "algorithms"
+  ],
+  "language": "typescript",
+  "exports": [
+    "validateBrackets"
+  ]
+}

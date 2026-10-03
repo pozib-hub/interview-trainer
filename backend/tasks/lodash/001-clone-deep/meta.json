@@ -1,0 +1,10 @@
+{
+  "title": "Глубокое клонирование объекта",
+  "difficulty": "hard",
+  "tags": [
+    "lodash",
+    "array"
+  ],
+  "language": "typescript",
+  "exports": []
+}

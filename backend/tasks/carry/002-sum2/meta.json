@@ -1,0 +1,15 @@
+{
+  "title": "Каррирование суммы (вариант 2)",
+  "difficulty": "hard",
+  "tags": [
+    "carry"
+  ],
+  "language": "typescript",
+  "exports": [
+    "sum",
+    "x2",
+    "curry",
+    "curried",
+    "curry2"
+  ]
+}
