@@ -3,13 +3,14 @@ import { useEffect, useRef, useState } from "react";
 import type { RunResult, TaskFull } from "@lib/types";
 import CodeEditor from "@components/CodeEditor";
 import TestResults from "@components/TestResults";
+import HintPanel from "@components/HintPanel";
 import {
   useResizableLayout,
   DragHandle,
   HDragHandle,
 } from "@hooks/useResizableLayout";
 import { useAppData } from "@hooks/useAppData";
-import { fetchTask, runTests } from "@lib/taskApi";
+import { fetchTask, runTests, requestHint } from "@lib/taskApi";
 import TaskLoadingSkeleton from "./Components/TaskLoadingSkeleton/TaskLoadingSkeleton";
 import TaskConditionView from "./Components/TaskConditionView/TaskConditionView";
 import TaskToolbar from "./Components/TaskToolbar/TaskToolbar";
@@ -26,6 +27,9 @@ export default function TaskPageClient({ taskId }: { taskId: string }) {
   const [taskLoading, setTaskLoading] = useState(true);
   const [tab, setTab] = useState<"condition" | "solution">("condition");
   const [showSolution, setShowSolution] = useState(false);
+  const [hints, setHints] = useState<string[]>([]);
+  const [hintLoading, setHintLoading] = useState(false);
+  const [hintError, setHintError] = useState("");
 
   const { layout, startDrag } = useResizableLayout();
   const app = useAppData();
@@ -55,6 +59,8 @@ export default function TaskPageClient({ taskId }: { taskId: string }) {
     setResult(null);
     setTab("condition");
     setShowSolution(false);
+    setHints([]);
+    setHintError("");
     fetchTask(taskId)
       .then((data) => {
         setTask(data);
@@ -102,6 +108,19 @@ export default function TaskPageClient({ taskId }: { taskId: string }) {
     }
   };
 
+  const askHint = async () => {
+    if (!task || hintLoading) return;
+    setHintLoading(true);
+    setHintError("");
+    const res = await requestHint(taskId, code, hints);
+    if ("error" in res && res.error) {
+      setHintError(res.error);
+    } else if ("hint" in res && res.hint) {
+      setHints((prev) => [...prev, res.hint]);
+    }
+    setHintLoading(false);
+  };
+
   if (taskLoading || !task) {
     return <TaskLoadingSkeleton layout={layout} />;
   }
@@ -142,12 +161,15 @@ export default function TaskPageClient({ taskId }: { taskId: string }) {
           run={run}
           reset={reset}
           language={task.language}
+          hintLoading={hintLoading}
+          onHint={askHint}
         />
         <CodeEditor
           value={code}
           onChange={setCode}
           language={task.language === "javascript" ? "javascript" : "typescript"}
         />
+        <HintPanel hints={hints} loading={hintLoading} error={hintError} />
         <HDragHandle
           onMouseDown={(e: React.MouseEvent) => startDrag("resultsHeight", e)}
         />

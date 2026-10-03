@@ -53,6 +53,7 @@ func NewRouter(d Deps) http.Handler {
 		r.Get("/api/task/*", d.H.Task)
 		r.Post("/api/run", d.H.Run)
 		r.Post("/api/task-proposal", d.H.ProposeTask)
+		r.Post("/api/task-hint", d.H.TaskHint)
 
 		r.Get("/api/data", d.H.GetData)
 		r.Post("/api/data", d.H.PatchData)

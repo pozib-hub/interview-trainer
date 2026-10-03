@@ -72,3 +72,7 @@ export interface TaskProposalResult {
   dryRun: boolean;
   selfCheck: TaskProposalSelfCheck;
 }
+
+export interface HintResponse {
+  hint: string;
+}

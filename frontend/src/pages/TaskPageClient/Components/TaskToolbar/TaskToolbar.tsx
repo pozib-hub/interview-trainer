@@ -1,5 +1,5 @@
 
-import { Button } from "@ui/index";
+import { Button, Spinner } from "@ui/index";
 
 interface ITaskToolbarProps {
   loading: boolean;
@@ -7,10 +7,12 @@ interface ITaskToolbarProps {
   run: () => void;
   reset: () => void;
   language: string;
+  hintLoading: boolean;
+  onHint: () => void;
 }
 
 function TaskToolbar(props: ITaskToolbarProps) {
-  const { loading, code, run, reset, language } = props;
+  const { loading, code, run, reset, language, hintLoading, onHint } = props;
 
   return (
     <div
@@ -24,6 +26,9 @@ function TaskToolbar(props: ITaskToolbarProps) {
     >
       <Button variant="primary" onClick={run} disabled={loading || !code.trim()}>
         {loading ? "Запуск…" : "▶ Запустить тесты"}
+      </Button>
+      <Button onClick={onHint} disabled={hintLoading || !code.trim()} title="Подсказка от ИИ: подтолкнёт к решению, не решая за тебя">
+        {hintLoading ? <>Подсказка… <Spinner style={{ marginLeft: 6 }} /></> : "🤖 Подсказка"}
       </Button>
       <Button onClick={reset}>
         Сбросить

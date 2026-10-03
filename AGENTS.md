@@ -28,6 +28,7 @@ backend/
     storage/postgres/  pgx-пул, goose-миграции, репозитории users/sessions/app_state
     service/           бизнес-логика (task, run, state, auth)
     proposal/          генерация задач из формы: LLM + валидация + PR на GitHub
+    hint/              подсказки от ИИ по ходу решения (не решают за пользователя)
     verify/            проверка задач из PR для CI (структура + прогоны vitest)
     handler/           HTTP-хэндлеры
     server/            chi-роутер, таймауты
