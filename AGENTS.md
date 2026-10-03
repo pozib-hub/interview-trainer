@@ -69,6 +69,7 @@ make verify-tasks   # из корня; ожидается «проблем: 0»
 # Проверка задач из PR (то же делает GitHub Actions в .github/workflows/verify-task-pr.yml)
 cd backend && go build -o /tmp/verifytask ./cmd/verifytask
 /tmp/verifytask -tasks ./tasks -runtime ./runtime -ids "algorithms/010-fibonacci"
+# + ИИ-ревью семантики (env LLM_API_KEY/LLM_BASE_URL/LLM_MODEL) или мок: -llm-mock
 
 # Всё вместе
 docker compose up -d --build   # frontend: :3000 (nginx), backend: :8080

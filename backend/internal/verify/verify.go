@@ -22,6 +22,10 @@ type Checker struct {
 	Source  TaskSource
 	Runner  *runner.VitestRunner
 	Timeout time.Duration
+	// LLM — необязательный ИИ-ревьюер (nil = пропустить семантическую проверку).
+	LLM LLMChat
+	// LLMMock — мок ИИ-ревью для локальной разработки.
+	LLMMock bool
 }
 
 // oralTaskAllowlist — «устные» задачи: их шаблон проходит тесты by design
@@ -49,6 +53,9 @@ type CheckResult struct {
 	TemplateTotal int
 	TemplateText  string
 	OralTask      bool
+	// AI — результат ИИ-ревью (nil = не выполнялось).
+	AI       *AIReview
+	AIError  string
 }
 
 func NewChecker(source TaskSource, r *runner.VitestRunner, timeout time.Duration) *Checker {
@@ -125,11 +132,41 @@ func (c *Checker) check(ctx context.Context, id string) CheckResult {
 		res.Errors = append(res.Errors, fmt.Sprintf("шаблон проходит все %d тестов — задача решается заглушкой без реализации", tmpl.Total))
 	}
 
+	// ── ИИ-ревью семантики задачи ─────────────────────────────────────────
+	if c.LLM != nil || c.LLMMock {
+		review, err := c.aiReview(ctx, task, sol, tmpl)
+		if err != nil {
+			// Ошибка LLM — проблема инфраструктуры, не задачи: warning, не fail.
+			res.AIError = err.Error()
+		} else {
+			res.AI = review
+			for _, p := range review.Problems {
+				if p.Severity == "error" {
+					res.Errors = append(res.Errors, fmt.Sprintf("🤖 ИИ-ревью [%s]: %s", p.Area, p.Message))
+				}
+			}
+		}
+	}
+
 	res.OK = len(res.Errors) == 0
 	res.SolutionText = fmt.Sprintf("%d/%d", sol.Total-sol.Failed, sol.Total)
 	res.TemplateText = fmt.Sprintf("%d/%d", tmpl.Total-tmpl.Failed, tmpl.Total)
 	res.OralTask = oralTaskAllowlist[id]
 	return res
+}
+
+func (c *Checker) aiReview(ctx context.Context, task domain.TaskFull, sol, tmpl domain.RunResult) (*AIReview, error) {
+	if c.LLMMock {
+		return &AIReview{
+			OK:      true,
+			Summary: "Мок ИИ-ревью: задача выглядит корректной.",
+		}, nil
+	}
+	reviewCtx, cancel := context.WithTimeout(ctx, 90*time.Second)
+	defer cancel()
+	return RunAIReview(reviewCtx, c.LLM, task,
+		fmt.Sprintf("%d/%d пройдено", sol.Total-sol.Failed, sol.Total),
+		fmt.Sprintf("%d/%d пройдено", tmpl.Total-tmpl.Failed, tmpl.Total))
 }
 
 func (c *Checker) runTask(ctx context.Context, task domain.TaskFull, code string) domain.RunResult {
@@ -155,26 +192,61 @@ func Report(results []CheckResult) string {
 	} else {
 		fmt.Fprintf(&sb, "## ❌ Проверка задач не пройдена\n\n")
 	}
-	fmt.Fprintf(&sb, "Проверено автоматически: структура файлов, метаданные, эталонное решение и шаблон (vitest).\n\n")
+	header := "Проверено автоматически: структура файлов, метаданные, эталонное решение и шаблон (vitest)"
+	for _, r := range results {
+		if r.AI != nil || r.AIError != "" {
+			header += "; семантическое ИИ-ревью (условие ↔ тесты ↔ решение, сложность, подсказки)"
+			break
+		}
+	}
+	fmt.Fprintf(&sb, "%s.\n\n", header)
 
 	for _, r := range results {
 		if r.OK {
 			fmt.Fprintf(&sb, "### ✅ `%s`\n\n", r.TaskID)
-			fmt.Fprintf(&sb, "- эталонное решение: %s тестов\n", r.SolutionText)
-			if r.OralTask {
-				fmt.Fprintf(&sb, "- шаблон: %s тестов (устная задача — шаблон равен решению by design)\n\n", r.TemplateText)
-			} else {
-				fmt.Fprintf(&sb, "- шаблон: %s тестов (должен проваливаться)\n\n", r.TemplateText)
-			}
-			continue
+		} else {
+			fmt.Fprintf(&sb, "### ❌ `%s`\n\n", r.TaskID)
 		}
-		fmt.Fprintf(&sb, "### ❌ `%s`\n\n", r.TaskID)
-		for _, e := range r.Errors {
-			fmt.Fprintf(&sb, "- %s\n", e)
+		fmt.Fprintf(&sb, "- эталонное решение: %s тестов\n", r.SolutionText)
+		if r.OralTask {
+			fmt.Fprintf(&sb, "- шаблон: %s тестов (устная задача — шаблон равен решению by design)\n", r.TemplateText)
+		} else {
+			fmt.Fprintf(&sb, "- шаблон: %s тестов (должен проваливаться)\n", r.TemplateText)
+		}
+		if r.AI != nil {
+			if r.AI.OK && len(r.AI.Problems) == 0 {
+				fmt.Fprintf(&sb, "- 🤖 ИИ-ревью: ✅ %s\n", r.AI.Summary)
+			} else {
+				fmt.Fprintf(&sb, "- 🤖 ИИ-ревью: %s — %s\n", verdictMark(r.AI.HasErrors()), r.AI.Summary)
+				for _, p := range r.AI.Problems {
+					fmt.Fprintf(&sb, "  - %s **[%s]** %s\n", severityMark(p.Severity), p.Area, p.Message)
+				}
+			}
+		} else if r.AIError != "" {
+			fmt.Fprintf(&sb, "- 🤖 ИИ-ревью: ⚠️ не выполнено (ошибка LLM: %s)\n", firstLine(r.AIError))
+		}
+		if len(r.Errors) > 0 {
+			for _, e := range r.Errors {
+				fmt.Fprintf(&sb, "- ❌ %s\n", e)
+			}
 		}
 		sb.WriteString("\n")
 	}
 	return sb.String()
+}
+
+func verdictMark(hasErrors bool) string {
+	if hasErrors {
+		return "❌"
+	}
+	return "⚠️"
+}
+
+func severityMark(severity string) string {
+	if severity == "error" {
+		return "❌"
+	}
+	return "⚠️"
 }
 
 func firstLine(s string) string {

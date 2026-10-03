@@ -655,10 +655,15 @@ test("getResult возвращает true", () => {
 7. **CI** — при открытии PR с изменениями в `backend/tasks/**` GitHub Actions
    (`.github/workflows/verify-task-pr.yml`) автоматически проверит задачи
    Go-верификатором (`backend/cmd/verifytask`): структура, метаданные,
-   эталонное решение (должно проходить все тесты) и шаблон (должен проваливаться).
+   эталонное решение (должно проходить все тесты), шаблон (должен проваливаться),
+   а также **семантическое ИИ-ревью** (условие ↔ тесты ↔ решение, сложность,
+   подсказки; нужен секрет `LLM_API_KEY` — тот же, что для генерации задач).
    Результат придёт комментарием на PR с метками `task-verified` / `task-failed`.
    Локальный прогон того же верификатора:
    ```bash
    cd backend && go build -o /tmp/verifytask ./cmd/verifytask
    /tmp/verifytask -tasks ./tasks -runtime ./runtime -ids "тема/NNN-slug"
+   # с ИИ-ревью (env LLM_API_KEY) или моком для локальной разработки:
+   LLM_API_KEY=... /tmp/verifytask -tasks ./tasks -runtime ./runtime -ids "..."
+   /tmp/verifytask -tasks ./tasks -runtime ./runtime -ids "..." -llm-mock
    ```

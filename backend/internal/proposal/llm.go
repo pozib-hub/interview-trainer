@@ -112,6 +112,15 @@ func (c *LLMClient) Chat(ctx context.Context, messages []llmMessage) (string, er
 	return "", fmt.Errorf("llm call failed after retries: %w", lastErr)
 }
 
+// ChatRaw отправляет пару system+user сообщений и возвращает сырой ответ.
+// Удобен для разовых запросов (например, ИИ-ревью задач в CI).
+func (c *LLMClient) ChatRaw(ctx context.Context, system, user string) (string, error) {
+	return c.Chat(ctx, []llmMessage{
+		{Role: "system", Content: system},
+		{Role: "user", Content: user},
+	})
+}
+
 var fenceRe = regexp.MustCompile("(?s)```(?:json)?\\s*(.*?)```")
 
 // ParseJSONContent парсит ответ модели в JSON, толерантен к fenced code blocks и прозе.
