@@ -1,7 +1,7 @@
 
 import type { RunResult } from "@lib/types";
 import classNames from "@shared/lib/classNames";
-import { Spinner } from "@ui/index";
+import { Button, Spinner } from "@ui/index";
 import styles from "./TestResults.module.css";
 
 const cx = classNames.bind(styles);
@@ -10,10 +10,12 @@ interface ITestResultsProps {
   result: RunResult | null;
   loading: boolean;
   height?: number;
+  onReview?: () => void;
+  reviewLoading?: boolean;
 }
 
 function TestResults(props: ITestResultsProps) {
-  const { result, loading, height = 260 } = props;
+  const { result, loading, height = 260, onReview, reviewLoading } = props;
 
   if (loading) {
     return (
@@ -65,6 +67,13 @@ function TestResults(props: ITestResultsProps) {
           Тесты не запустились: код не скомпилировался или не был найден ни один
           тест. Обычно причина — синтаксическая ошибка или отсутствующий
           экспорт.
+        </div>
+      )}
+      {result.passed && onReview && (
+        <div className={cx("ReviewRow")}>
+          <Button size="sm" onClick={onReview} disabled={reviewLoading}>
+            {reviewLoading ? <>Ревью… <Spinner style={{ marginLeft: 6 }} /></> : "🤖 ИИ-ревью кода"}
+          </Button>
         </div>
       )}
       {result.assertions.map((a, i) => (

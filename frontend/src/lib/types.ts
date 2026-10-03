@@ -76,3 +76,13 @@ export interface TaskProposalResult {
 export interface HintResponse {
   hint: string;
 }
+
+export interface TaskReview {
+  verdict: string;
+  summary: string;
+  strengths: string[];
+  improvements: string[];
+  questions: string[];
+  complexity: string;
+  comparison: string;
+}

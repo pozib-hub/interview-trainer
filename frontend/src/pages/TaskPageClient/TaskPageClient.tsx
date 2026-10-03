@@ -10,7 +10,9 @@ import {
   HDragHandle,
 } from "@hooks/useResizableLayout";
 import { useAppData } from "@hooks/useAppData";
-import { fetchTask, runTests, requestHint } from "@lib/taskApi";
+import { fetchTask, runTests, requestHint, requestReview } from "@lib/taskApi";
+import type { TaskReview } from "@lib/types";
+import ReviewModal from "@components/ReviewModal";
 import TaskLoadingSkeleton from "./Components/TaskLoadingSkeleton/TaskLoadingSkeleton";
 import TaskConditionView from "./Components/TaskConditionView/TaskConditionView";
 import TaskToolbar from "./Components/TaskToolbar/TaskToolbar";
@@ -30,6 +32,10 @@ export default function TaskPageClient({ taskId }: { taskId: string }) {
   const [hints, setHints] = useState<string[]>([]);
   const [hintLoading, setHintLoading] = useState(false);
   const [hintError, setHintError] = useState("");
+  const [review, setReview] = useState<TaskReview | null>(null);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [reviewError, setReviewError] = useState("");
+  const [reviewOpen, setReviewOpen] = useState(false);
 
   const { layout, startDrag } = useResizableLayout();
   const app = useAppData();
@@ -61,6 +67,9 @@ export default function TaskPageClient({ taskId }: { taskId: string }) {
     setShowSolution(false);
     setHints([]);
     setHintError("");
+    setReview(null);
+    setReviewError("");
+    setReviewOpen(false);
     fetchTask(taskId)
       .then((data) => {
         setTask(data);
@@ -121,6 +130,21 @@ export default function TaskPageClient({ taskId }: { taskId: string }) {
     setHintLoading(false);
   };
 
+  const askReview = async () => {
+    if (reviewLoading) return;
+    setReviewLoading(true);
+    setReviewError("");
+    setReviewOpen(true);
+    setReview(null);
+    const res = await requestReview(taskId, code);
+    if ("error" in res && res.error) {
+      setReviewError(res.error);
+    } else if (!("error" in res)) {
+      setReview(res);
+    }
+    setReviewLoading(false);
+  };
+
   if (taskLoading || !task) {
     return <TaskLoadingSkeleton layout={layout} />;
   }
@@ -177,8 +201,17 @@ export default function TaskPageClient({ taskId }: { taskId: string }) {
           result={result}
           loading={loading}
           height={layout.resultsHeight}
+          onReview={askReview}
+          reviewLoading={reviewLoading}
         />
       </div>
+      <ReviewModal
+        open={reviewOpen}
+        loading={reviewLoading}
+        error={reviewError}
+        review={review}
+        onClose={() => setReviewOpen(false)}
+      />
     </div>
   );
 }

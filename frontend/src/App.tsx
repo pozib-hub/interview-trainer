@@ -4,6 +4,7 @@ import TasksLayout from "./pages/TasksLayout";
 import TasksIndex from "./pages/TasksIndex";
 import TaskPage from "./pages/TaskPage";
 import InterviewPage from "./pages/Interview";
+import ProgressPage from "./pages/Progress";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
           <Route path="*" element={<TaskPage />} />
         </Route>
         <Route path="/interview" element={<InterviewPage />} />
+        <Route path="/progress" element={<ProgressPage />} />
       </Routes>
     </Providers>
   );

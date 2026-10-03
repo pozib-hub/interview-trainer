@@ -8,6 +8,7 @@ import (
 
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/hint"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/proposal"
+	"github.com/pozib-hub/interview-trainer-v2/backend/internal/review"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/service"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/storage"
 )
@@ -19,6 +20,7 @@ type Handler struct {
 	auth          *service.AuthService
 	proposal      *proposal.Service
 	hint          *hint.Service
+	review        *review.Service
 	users         storage.UserRepository
 	sessions      storage.SessionRepository
 	secureCookies bool
@@ -32,6 +34,7 @@ func New(
 	auth *service.AuthService,
 	proposalSvc *proposal.Service,
 	hintSvc *hint.Service,
+	reviewSvc *review.Service,
 	users storage.UserRepository,
 	sessions storage.SessionRepository,
 	secureCookies bool,
@@ -47,6 +50,7 @@ func New(
 		auth:          auth,
 		proposal:      proposalSvc,
 		hint:          hintSvc,
+		review:        reviewSvc,
 		users:         users,
 		sessions:      sessions,
 		secureCookies: secureCookies,

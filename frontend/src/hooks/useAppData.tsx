@@ -23,18 +23,21 @@ export interface AppData {
   sessions: InterviewSession[];
   code: Record<string, string>;
   layout: { sidebar: number; leftPane: number };
+  solvedDates: Record<string, number>;
 }
 
 const LS_KEYS = {
   solved: "it:solved",
   sessions: "it:interview-history",
   layout: "it:layout",
+  solvedDates: "it:solved-dates",
 };
 
 function loadFromStorage(): AppData {
   let solved: string[] = [];
   let sessions: InterviewSession[] = [];
   let layout = { sidebar: 280, leftPane: 420 };
+  let solvedDates: Record<string, number> = {};
   const code: Record<string, string> = {};
 
   try {
@@ -50,6 +53,10 @@ function loadFromStorage(): AppData {
     if (raw) layout = { ...layout, ...JSON.parse(raw) };
   } catch {}
   try {
+    const raw = localStorage.getItem(LS_KEYS.solvedDates);
+    if (raw) solvedDates = JSON.parse(raw);
+  } catch {}
+  try {
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key?.startsWith("it:code:")) {
@@ -58,7 +65,7 @@ function loadFromStorage(): AppData {
     }
   } catch {}
 
-  return { solved, sessions, code, layout };
+  return { solved, sessions, code, layout, solvedDates };
 }
 
 function saveToStorage(data: Partial<AppData>) {
@@ -68,6 +75,8 @@ function saveToStorage(data: Partial<AppData>) {
     localStorage.setItem(LS_KEYS.sessions, JSON.stringify(data.sessions));
   if (data.layout !== undefined)
     localStorage.setItem(LS_KEYS.layout, JSON.stringify(data.layout));
+  if (data.solvedDates !== undefined)
+    localStorage.setItem(LS_KEYS.solvedDates, JSON.stringify(data.solvedDates));
   if (data.code !== undefined) {
     for (const [id, val] of Object.entries(data.code)) {
       localStorage.setItem("it:code:" + id, val);
@@ -116,6 +125,7 @@ const EMPTY_DATA: AppData = {
   sessions: [],
   code: {},
   layout: { sidebar: 280, leftPane: 420 },
+  solvedDates: {},
 };
 
 export function AppDataProvider({ children }: { children: ReactNode }) {
@@ -136,11 +146,16 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
         if (res.ok) {
           const server = (await res.json()) as AppData;
           // Union merge: combine both sides without losing data
+          const solvedDates: Record<string, number> = { ...server.solvedDates };
+          for (const [id, at] of Object.entries(local.solvedDates ?? {})) {
+            if (!solvedDates[id] || at > solvedDates[id]) solvedDates[id] = at;
+          }
           const merged: AppData = {
             solved: Array.from(new Set([...server.solved, ...local.solved])),
             sessions: mergeSessions(server.sessions, local.sessions),
             code: { ...server.code, ...local.code },
             layout: server.layout ?? local.layout,
+            solvedDates,
           };
           setData(merged);
           dataRef.current = merged;
@@ -149,7 +164,8 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
           if (
             merged.solved.length > server.solved.length ||
             merged.sessions.length > server.sessions.length ||
-            Object.keys(merged.code).length > Object.keys(server.code).length
+            Object.keys(merged.code).length > Object.keys(server.code).length ||
+            Object.keys(merged.solvedDates).length > Object.keys(server.solvedDates ?? {}).length
           ) {
             apiFetch("/api/data", {
               method: "POST",
@@ -192,9 +208,16 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       if (set.has(taskId)) set.delete(taskId);
       else set.add(taskId);
       const solved = [...set];
-      saveToStorage({ solved });
-      pendingPatch.current = { ...pendingPatch.current, solved };
-      setData({ ...prev, solved });
+      let solvedDates = prev.solvedDates;
+      if (set.has(taskId)) {
+        solvedDates = { ...prev.solvedDates, [taskId]: Date.now() };
+      } else {
+        const { [taskId]: _drop, ...rest } = prev.solvedDates;
+        solvedDates = rest;
+      }
+      saveToStorage({ solved, solvedDates });
+      pendingPatch.current = { ...pendingPatch.current, solved, solvedDates };
+      setData({ ...prev, solved, solvedDates });
       scheduleSync();
     },
     [scheduleSync]
@@ -205,9 +228,10 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       const prev = dataRef.current;
       if (prev.solved.includes(taskId)) return;
       const solved = [...prev.solved, taskId];
-      saveToStorage({ solved });
-      pendingPatch.current = { ...pendingPatch.current, solved };
-      setData({ ...prev, solved });
+      const solvedDates = { ...prev.solvedDates, [taskId]: Date.now() };
+      saveToStorage({ solved, solvedDates });
+      pendingPatch.current = { ...pendingPatch.current, solved, solvedDates };
+      setData({ ...prev, solved, solvedDates });
       scheduleSync();
     },
     [scheduleSync]
@@ -220,9 +244,9 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
 
   const clearSolved = useCallback(() => {
     const prev = dataRef.current;
-    saveToStorage({ solved: [] });
-    pendingPatch.current = { ...pendingPatch.current, solved: [] };
-    setData({ ...prev, solved: [] });
+    saveToStorage({ solved: [], solvedDates: {} });
+    pendingPatch.current = { ...pendingPatch.current, solved: [], solvedDates: {} };
+    setData({ ...prev, solved: [], solvedDates: {} });
     scheduleSync();
   }, [scheduleSync]);
 

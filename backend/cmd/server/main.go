@@ -14,6 +14,7 @@ import (
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/handler"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/hint"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/proposal"
+	"github.com/pozib-hub/interview-trainer-v2/backend/internal/review"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/runner"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/scanner"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/server"
@@ -77,6 +78,13 @@ func run() error {
 		Mock:  cfg.LLMMock,
 	}
 
+	reviewSvc := &review.Service{
+		LLM:   proposal.NewLLMClient(cfg.LLMBaseURL, cfg.LLMModel, cfg.LLMAPIKey, time.Duration(cfg.LLMTimeoutMS)*time.Millisecond, cfg.LLMMaxRetries),
+		Tasks: taskScanner,
+		Run:   codeRunner,
+		Mock:  cfg.LLMMock,
+	}
+
 	h := handler.New(
 		service.NewTaskService(taskScanner),
 		service.NewStateService(states),
@@ -84,6 +92,7 @@ func run() error {
 		service.NewAuthService(users, sessions, states),
 		proposalSvc,
 		hintSvc,
+		reviewSvc,
 		users,
 		sessions,
 		cfg.CookieSecure,

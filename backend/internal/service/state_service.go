@@ -47,6 +47,8 @@ func (s *StateService) PatchData(ctx context.Context, userID string, patch json.
 				_ = applyField(raw, &next.Code)
 			case "layout":
 				_ = applyField(raw, &next.Layout)
+			case "solvedDates":
+				_ = applyField(raw, &next.SolvedDates)
 			}
 		}
 		return next

@@ -1,4 +1,4 @@
-import type { RunResult, TaskFull, TaskSummary, TaskProposalInput, TaskProposalResult, HintResponse } from "./types";
+import type { RunResult, TaskFull, TaskSummary, TaskProposalInput, TaskProposalResult, HintResponse, TaskReview } from "./types";
 import { apiFetch } from "./fetchApi";
 
 export async function fetchTasks(): Promise<TaskSummary[]> {
@@ -50,6 +50,22 @@ export async function requestHint(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ taskId, code, previousHints }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    return { error: data.error || `Ошибка ${res.status}` };
+  }
+  return data;
+}
+
+export async function requestReview(
+  taskId: string,
+  code: string,
+): Promise<TaskReview | { error: string }> {
+  const res = await apiFetch("/api/task-review", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ taskId, code }),
   });
   const data = await res.json();
   if (!res.ok) {

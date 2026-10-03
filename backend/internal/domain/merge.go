@@ -36,10 +36,22 @@ func MergeAppData(account, guest AppData) AppData {
 		code[id] = c
 	}
 
+	// Даты решения: берём более свежую (позже отмечено = решено позже).
+	solvedDates := make(map[string]int64, len(account.SolvedDates)+len(guest.SolvedDates))
+	for id, at := range account.SolvedDates {
+		solvedDates[id] = at
+	}
+	for id, at := range guest.SolvedDates {
+		if prev, ok := solvedDates[id]; !ok || at > prev {
+			solvedDates[id] = at
+		}
+	}
+
 	return AppData{
-		Solved:   solved,
-		Sessions: sessions,
-		Code:     code,
-		Layout:   guest.Layout,
+		Solved:      solved,
+		Sessions:    sessions,
+		Code:        code,
+		Layout:      guest.Layout,
+		SolvedDates: solvedDates,
 	}
 }

@@ -63,6 +63,7 @@ export default function TasksLayout() {
         <ThemeToggle />
         <UserMenu />
         <Button size="sm" href="/interview">🎯 Собеседование</Button>
+        <Button size="sm" href="/progress" title="Дашборд прогресса: активность, темы, рекомендации">📊 Прогресс</Button>
         <Button size="sm" variant="primary" onClick={() => setProposalOpen(true)} title="Предложить новую задачу — ИИ сгенерирует её и откроет pull request">
           ➕ Добавить задачу
         </Button>
