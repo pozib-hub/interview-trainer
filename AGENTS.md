@@ -72,7 +72,8 @@ cd backend && go build -o /tmp/verifytask ./cmd/verifytask
 # + ИИ-ревью семантики (env LLM_API_KEY/LLM_BASE_URL/LLM_MODEL) или мок: -llm-mock
 
 # Всё вместе
-docker compose up -d --build   # frontend: :3000 (nginx), backend: :8080
+make up             # поднять стек и открыть фронтенд в браузере (docker compose up -d --build + open)
+docker compose up -d --build   # то же без открытия браузера: frontend :3000 (nginx), backend :8080
 ```
 
 ### Проверить задачу через API

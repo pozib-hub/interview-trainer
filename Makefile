@@ -4,6 +4,15 @@ COMPOSE := docker compose
 
 up:
 	$(COMPOSE) up -d --build
+	@echo "⏳ Жду фронтенд на http://localhost:3000…"
+	@i=0; until curl -sf -o /dev/null http://localhost:3000; do \
+		i=$$((i+1)); \
+		if [ $$i -gt 120 ]; then echo "⚠ Не ответил за 120 сек — открой http://localhost:3000 вручную"; exit 0; fi; \
+		sleep 1; \
+	done
+	@if command -v open >/dev/null 2>&1; then echo "🚀 Открываю браузер…"; open http://localhost:3000; \
+	elif command -v xdg-open >/dev/null 2>&1; then echo "🚀 Открываю браузер…"; xdg-open http://localhost:3000; \
+	else echo "🚀 Готово: http://localhost:3000"; fi
 
 down:
 	$(COMPOSE) down
