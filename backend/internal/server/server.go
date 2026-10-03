@@ -52,6 +52,7 @@ func NewRouter(d Deps) http.Handler {
 		r.Get("/api/tasks", d.H.Tasks)
 		r.Get("/api/task/*", d.H.Task)
 		r.Post("/api/run", d.H.Run)
+		r.Post("/api/task-proposal", d.H.ProposeTask)
 
 		r.Get("/api/data", d.H.GetData)
 		r.Post("/api/data", d.H.PatchData)
@@ -71,7 +72,8 @@ func New(d Deps) *http.Server {
 		Handler:           NewRouter(d),
 		ReadHeaderTimeout: 10 * time.Second,
 		ReadTimeout:       30 * time.Second,
-		WriteTimeout:      120 * time.Second,
-		IdleTimeout:       120 * time.Second,
+		// 300s: генерация задачи через LLM (с retry) может занимать пару минут.
+		WriteTimeout: 300 * time.Second,
+		IdleTimeout:  120 * time.Second,
 	}
 }

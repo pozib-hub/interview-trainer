@@ -3,8 +3,10 @@ package handler
 import (
 	"encoding/json"
 	"io"
+	"log/slog"
 	"net/http"
 
+	"github.com/pozib-hub/interview-trainer-v2/backend/internal/proposal"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/service"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/storage"
 )
@@ -14,9 +16,11 @@ type Handler struct {
 	state         *service.StateService
 	run           *service.RunService
 	auth          *service.AuthService
+	proposal      *proposal.Service
 	users         storage.UserRepository
 	sessions      storage.SessionRepository
 	secureCookies bool
+	log           *slog.Logger
 }
 
 func New(
@@ -24,18 +28,25 @@ func New(
 	state *service.StateService,
 	run *service.RunService,
 	auth *service.AuthService,
+	proposalSvc *proposal.Service,
 	users storage.UserRepository,
 	sessions storage.SessionRepository,
 	secureCookies bool,
+	log *slog.Logger,
 ) *Handler {
+	if log == nil {
+		log = slog.Default()
+	}
 	return &Handler{
 		tasks:         tasks,
 		state:         state,
 		run:           run,
 		auth:          auth,
+		proposal:      proposalSvc,
 		users:         users,
 		sessions:      sessions,
 		secureCookies: secureCookies,
+		log:           log,
 	}
 }
 

@@ -1,0 +1,123 @@
+.Overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 6vh 16px 16px;
+  background: rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+}
+
+.Modal {
+  width: 640px;
+  max-width: 100%;
+  border-radius: 12px;
+  padding: 24px;
+  background: var(--bg-panel, #fff);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.Label {
+  display: block;
+  margin-bottom: 14px;
+}
+
+.LabelText {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: var(--text, inherit);
+  opacity: 0.85;
+}
+
+.Input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border, #ccc);
+  background: var(--bg-input, #fff);
+  color: inherit;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.Input:focus {
+  outline: 2px solid rgba(90, 140, 255, 0.4);
+  border-color: rgba(90, 140, 255, 0.8);
+}
+
+.Textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.Code {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12px;
+}
+
+.Actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.Center {
+  padding: 32px 8px;
+  text-align: center;
+}
+
+.Steps {
+  text-align: left;
+  max-width: 420px;
+  margin: 0 auto;
+  font-size: 12px;
+  color: var(--text-muted, #888);
+}
+
+.Step {
+  padding: 4px 0;
+  opacity: 0.45;
+}
+
+.StepActive {
+  opacity: 1;
+}
+
+.StepDone {
+  opacity: 0.8;
+  text-decoration: line-through;
+}
+
+.ResultCard {
+  border: 1px solid var(--border, #ddd);
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 8px;
+  background: var(--bg-secondary, #fafafa);
+}
+
+.ErrorCard {
+  border-color: rgba(220, 60, 60, 0.5);
+  background: rgba(220, 60, 60, 0.06);
+}
+
+.Ok {
+  color: #2e9e44;
+  font-weight: 600;
+}
+
+.Bad {
+  color: #d24444;
+  font-weight: 600;
+}
+
+.Pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+}

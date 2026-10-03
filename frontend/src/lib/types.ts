@@ -46,3 +46,29 @@ export interface RunResult {
   stderr: string;
   durationMs: number;
 }
+
+export interface TaskProposalInput {
+  title: string;
+  sourceUrl: string;
+  description: string;
+  userSolution: string;
+  notes: string;
+}
+
+export interface TaskProposalSelfCheck {
+  passed: boolean;
+  total: number;
+  failed: number;
+  stderr: string;
+}
+
+export interface TaskProposalResult {
+  taskId: string;
+  topic: string;
+  slug: string;
+  title: string;
+  prUrl: string;
+  branch: string;
+  dryRun: boolean;
+  selfCheck: TaskProposalSelfCheck;
+}

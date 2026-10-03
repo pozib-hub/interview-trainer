@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GeneratedTask",
+  "description": "Structured representation of a single Interview Trainer task (Pattern 1: Function Export). Deterministic code assembles the 6 project files from this object. The LLM NEVER writes files directly.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 120,
+      "description": "Человекочитаемый заголовок задачи на русском. Если в источнике есть английский заголовок — дай русский аналог."
+    },
+    "topic": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Категория-тема. ДОЛЖНА быть из списка разрешённых, переданного в промпте. НЕ придумывай новые категории."
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "minLength": 2,
+      "maxLength": 60,
+      "description": "Английский kebab-case идентификатор задачи (без номера). Отражает суть, например: two-sum, valid-parentheses."
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": ["easy", "medium", "hard"],
+      "description": "Определи по сути задачи. easy — одна концепция; medium — комбинация; hard — нетривиальный алгоритм."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+      "minItems": 1,
+      "maxItems": 8,
+      "description": "Английский kebab-case. ПЕРВЫЙ элемент ОБЯЗАН совпадать с topic."
+    },
+    "language": {
+      "type": "string",
+      "enum": ["typescript"]
+    },
+    "exports": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1,
+      "maxItems": 1,
+      "description": "Имя функции, которую пользователь реализует и экспортирует. camelCase."
+    },
+    "condition": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Условие задачи в Markdown БЕЗ ведущего заголовка '#' (генератор добавит его из title). Только постановка: что дано, что вернуть. БЕЗ примеров и БЕЗ ограничений — они идут в отдельных массивах examples и constraints. Генератор сам соберёт всё вместе."
+    },
+    "examples": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Примеры ввода-вывода, извлечённые ТОЛЬКО из исходных данных. Если примеров нет — верни пустой массив []. НЕ выдумывай примеры."
+    },
+    "constraints": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Ограничения (асимптотика, диапазоны входных данных), извлечённые ТОЛЬКО из исходных данных. Если ограничений нет — верни пустой массив []. НЕ выдумывай ограничения."
+    },
+    "templateCode": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Код template.ts: экспортирует функцию из exports, содержит // TODO и заглушку return. Должен компилироваться (return undefined as any допустимо)."
+    },
+    "solutionCode": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Код solution.ts: полное эталонное решение, экспортирует функцию из exports. БЕЗ console.log, БЕЗ закомментированного кода. Обязано проходить все тесты из testCode."
+    },
+    "testCode": {
+      "type": "string",
+      "minLength": 20,
+      "description": "Код tests/test.ts: import { test, expect } from 'vitest'; import из '../solution'. БЕЗ describe. Базовый кейс + крайние случаи."
+    },
+    "hints": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 5 },
+      "minItems": 1,
+      "description": "2-3 подсказки без заголовков '## ...' (генератор добавит). Общие направления мысли, крайние случаи, подходы. БЕЗ выдуманных фактов."
+    },
+    "source": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "url": { "type": "string", "minLength": 1 }
+      },
+      "required": ["name", "url"],
+      "description": "Источник задачи. Если URL дан — сохрани его. Если источника нет — верни null."
+    }
+  },
+  "required": [
+    "title",
+    "topic",
+    "slug",
+    "difficulty",
+    "tags",
+    "language",
+    "exports",
+    "condition",
+    "examples",
+    "constraints",
+    "templateCode",
+    "solutionCode",
+    "testCode",
+    "hints"
+  ]
+}

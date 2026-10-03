@@ -26,6 +26,7 @@ backend/
     runner/            запуск vitest через node subprocess (worker.mjs в embed)
     storage/postgres/  pgx-пул, goose-миграции, репозитории users/sessions/app_state
     service/           бизнес-логика (task, run, state, auth)
+    proposal/          генерация задач из формы: LLM + валидация + PR на GitHub
     handler/           HTTP-хэндлеры
     server/            chi-роутер, таймауты
   runtime/            node-окружение для тестов (vitest в node_modules)

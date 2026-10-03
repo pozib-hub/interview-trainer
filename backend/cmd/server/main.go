@@ -12,6 +12,7 @@ import (
 
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/config"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/handler"
+	"github.com/pozib-hub/interview-trainer-v2/backend/internal/proposal"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/runner"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/scanner"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/server"
@@ -57,14 +58,27 @@ func run() error {
 		return err
 	}
 
+	proposalSvc := proposal.NewService(proposal.Options{
+		TasksRoot:  cfg.TasksDir,
+		Runner:     codeRunner,
+		LLM:        proposal.NewLLMClient(cfg.LLMBaseURL, cfg.LLMModel, cfg.LLMAPIKey, cfg.LLMTimeout),
+		LLMMock:    cfg.LLMMock,
+		GitHub:     proposal.NewGitHubClient(cfg.GitHubAPIBase, cfg.GitHubToken, cfg.GitHubRepo, 60*time.Second),
+		DryRun:     cfg.ProposalDryRun,
+		BaseBranch: cfg.ProposalBaseBranch,
+		Log:        log,
+	})
+
 	h := handler.New(
 		service.NewTaskService(taskScanner),
 		service.NewStateService(states),
 		service.NewRunService(taskScanner, codeRunner),
 		service.NewAuthService(users, sessions, states),
+		proposalSvc,
 		users,
 		sessions,
 		cfg.CookieSecure,
+		log,
 	)
 
 	srv := server.New(server.Deps{

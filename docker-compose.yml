@@ -31,6 +31,17 @@ services:
       TASKS_DIR: /app/tasks
       RUNTIME_DIR: /app/runtime
       RUN_TIMEOUT: 30s
+      # Генерация задач: LLM (OpenAI-совместимый) + PR на GitHub.
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://api.deepseek.com/v1}
+      LLM_MODEL: ${LLM_MODEL:-deepseek-chat}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_TIMEOUT: ${LLM_TIMEOUT:-90s}
+      LLM_MOCK: ${LLM_MOCK:-false}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      GITHUB_REPO: ${GITHUB_REPO:-pozib-hub/interview-trainer-v2}
+      GITHUB_API_BASE: ${GITHUB_API_BASE:-https://api.github.com}
+      PROPOSAL_BASE_BRANCH: ${PROPOSAL_BASE_BRANCH:-main}
+      PROPOSAL_DRY_RUN: ${PROPOSAL_DRY_RUN:-false}
     depends_on:
       postgres:
         condition: service_healthy

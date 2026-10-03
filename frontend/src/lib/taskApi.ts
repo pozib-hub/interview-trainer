@@ -1,4 +1,4 @@
-import type { RunResult, TaskFull, TaskSummary } from "./types";
+import type { RunResult, TaskFull, TaskSummary, TaskProposalInput, TaskProposalResult } from "./types";
 import { apiFetch } from "./fetchApi";
 
 export async function fetchTasks(): Promise<TaskSummary[]> {
@@ -26,4 +26,17 @@ export async function runTests(taskId: string, code: string): Promise<RunResult>
     body: JSON.stringify({ taskId, code }),
   });
   return res.json();
+}
+
+export async function proposeTask(input: TaskProposalInput): Promise<{ ok: true; data: TaskProposalResult } | { ok: false; error: string }> {
+  const res = await apiFetch("/api/task-proposal", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    return { ok: false, error: data.error || `Ошибка ${res.status}` };
+  }
+  return { ok: true, data };
 }

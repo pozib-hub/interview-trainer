@@ -3,14 +3,15 @@ import { Outlet } from "react-router-dom";
 import type { TaskSummary } from "@lib/types";
 import TaskTree from "@components/TaskTree";
 import UserMenu from "@components/UserMenu";
+import TaskProposalModal from "@components/TaskProposalModal";
 import { useResizableLayout, DragHandle } from "@hooks/useResizableLayout";
 import { useAppData } from "@hooks/useAppData";
 import { fetchTopics } from "@lib/taskApi";
-import { newTaskIssueUrl } from "@lib/contribute";
 import { Box, Button, Skeleton, Spacer, Spinner, ThemeToggle, Typography } from "@ui/index";
 
 export default function TasksLayout() {
   const [topics, setTopics] = useState<Record<string, TaskSummary[]>>({});
+  const [proposalOpen, setProposalOpen] = useState(false);
   const { layout, startDrag, containerRef } = useResizableLayout();
   const app = useAppData();
 
@@ -62,7 +63,7 @@ export default function TasksLayout() {
         <ThemeToggle />
         <UserMenu />
         <Button size="sm" href="/interview">🎯 Собеседование</Button>
-        <Button size="sm" variant="primary" href={newTaskIssueUrl()} external title="Предложить новую задачу через GitHub Issue">
+        <Button size="sm" variant="primary" onClick={() => setProposalOpen(true)} title="Предложить новую задачу — ИИ сгенерирует её и откроет pull request">
           ➕ Добавить задачу
         </Button>
       </header>
@@ -93,6 +94,7 @@ export default function TasksLayout() {
           <Outlet />
         </main>
       </div>
+      <TaskProposalModal open={proposalOpen} onClose={() => setProposalOpen(false)} />
     </div>
   );
 }
