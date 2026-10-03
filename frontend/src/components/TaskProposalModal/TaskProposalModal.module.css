@@ -1,22 +1,24 @@
 .Overlay {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: 100;
   display: flex;
   align-items: flex-start;
   justify-content: center;
   padding: 6vh 16px 16px;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
   overflow-y: auto;
 }
 
-.Modal {
-  width: 640px;
+.Panel {
+  width: 620px;
   max-width: 100%;
-  border-radius: 12px;
   padding: 24px;
-  background: var(--bg-panel, #fff);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
 }
 
 .Label {
@@ -27,36 +29,39 @@
 .LabelText {
   display: block;
   font-size: 12px;
-  font-weight: 600;
+  color: var(--text-muted);
   margin-bottom: 5px;
-  color: var(--text, inherit);
-  opacity: 0.85;
 }
 
 .Input {
   width: 100%;
-  box-sizing: border-box;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid var(--border, #ccc);
-  background: var(--bg-input, #fff);
-  color: inherit;
-  font-size: 13px;
+  padding: 9px 12px;
+  background: var(--bg-softer);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 14px;
   font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
 }
 
 .Input:focus {
-  outline: 2px solid rgba(90, 140, 255, 0.4);
-  border-color: rgba(90, 140, 255, 0.8);
+  border-color: var(--accent);
+}
+
+.Input::placeholder {
+  color: var(--text-muted);
 }
 
 .Textarea {
   resize: vertical;
-  min-height: 60px;
+  min-height: 64px;
+  line-height: 1.5;
 }
 
 .Code {
-  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-family: "SF Mono", Monaco, Menlo, monospace;
   font-size: 12px;
 }
 
@@ -77,7 +82,7 @@
   max-width: 420px;
   margin: 0 auto;
   font-size: 12px;
-  color: var(--text-muted, #888);
+  color: var(--text-muted);
 }
 
 .Step {
@@ -95,25 +100,25 @@
 }
 
 .ResultCard {
-  border: 1px solid var(--border, #ddd);
-  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
   padding: 16px;
   margin-top: 8px;
-  background: var(--bg-secondary, #fafafa);
+  background: var(--bg-softer);
 }
 
 .ErrorCard {
-  border-color: rgba(220, 60, 60, 0.5);
-  background: rgba(220, 60, 60, 0.06);
+  border-color: rgba(248, 81, 73, 0.4);
+  background: rgba(248, 81, 73, 0.08);
 }
 
 .Ok {
-  color: #2e9e44;
+  color: var(--green);
   font-weight: 600;
 }
 
 .Bad {
-  color: #d24444;
+  color: var(--red);
   font-weight: 600;
 }
 

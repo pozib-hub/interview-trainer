@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Spinner, Typography } from "@ui/index";
 import { proposeTask } from "@lib/taskApi";
 import type { TaskProposalResult } from "@lib/types";
@@ -28,7 +28,6 @@ export default function TaskProposalModal({ open, onClose }: ITaskProposalModalP
   const [result, setResult] = useState<TaskProposalResult | null>(null);
   const [error, setError] = useState("");
   const [stepIdx, setStepIdx] = useState(0);
-  const descriptionRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -45,11 +44,12 @@ export default function TaskProposalModal({ open, onClose }: ITaskProposalModalP
   }, [phase]);
 
   useEffect(() => {
+    if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && open && phase !== "loading") onClose();
+      if (e.key === "Escape" && phase !== "loading") onClose();
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
   }, [open, phase, onClose]);
 
   if (!open) return null;
@@ -87,11 +87,13 @@ export default function TaskProposalModal({ open, onClose }: ITaskProposalModalP
 
   return (
     <div className={styles.Overlay} onMouseDown={(e) => e.target === e.currentTarget && phase !== "loading" && onClose()}>
-      <div className={styles.Modal}>
+      <div className={styles.Panel} onMouseDown={(e) => e.stopPropagation()}>
         {phase === "form" && (
           <form onSubmit={handleSubmit}>
-            <Typography size={18} mb={16}>Предложить новую задачу</Typography>
-            <Typography color="text-muted" size={12} mb={16}>
+            <Typography tag="h2" size={18} mb={4}>
+              Предложить новую задачу
+            </Typography>
+            <Typography tag="p" color="text-muted" size={12} mb={16}>
               Опишите задачу — ИИ сгенерирует условие, тесты и решение и откроет pull request в репозиторий.
             </Typography>
 
@@ -120,7 +122,6 @@ export default function TaskProposalModal({ open, onClose }: ITaskProposalModalP
             <label className={styles.Label}>
               <span className={styles.LabelText}>Описание задачи *</span>
               <textarea
-                ref={descriptionRef}
                 className={`${styles.Input} ${styles.Textarea}`}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -167,7 +168,7 @@ export default function TaskProposalModal({ open, onClose }: ITaskProposalModalP
 
         {phase === "loading" && (
           <div className={styles.Center}>
-            <Typography size={18} mb={12}><Spinner mr={8} /> Генерация задачи…</Typography>
+            <Typography tag="h2" size={18} mb={12}><Spinner mr={8} /> Генерация задачи…</Typography>
             <Typography color="text-muted" size={13} mb={8}>
               Это занимает до минуты — ИИ пишет условие, тесты и решение, затем оно проверяется на тестах.
             </Typography>
@@ -183,21 +184,21 @@ export default function TaskProposalModal({ open, onClose }: ITaskProposalModalP
 
         {phase === "result" && result && (
           <div>
-            <Typography size={18} mb={8}>✅ Задача сгенерирована</Typography>
+            <Typography tag="h2" size={18} mb={8}>✅ Задача сгенерирована</Typography>
             <div className={styles.ResultCard}>
               <Typography mb={8}>
                 <strong>{result.title}</strong>
               </Typography>
-              <Typography size={12} color="text-muted" mb={12}>
+              <Typography tag="p" size={12} color="text-muted" mb={12}>
                 ID: <code>{result.taskId}</code> · ветка: <code>{result.branch}</code>
               </Typography>
-              <Typography size={13} mb={12}>
+              <Typography tag="p" size={13} mb={12}>
                 Самопроверка (vitest): {result.selfCheck.passed
                   ? <span className={styles.Ok}>пройдена, {result.selfCheck.total} тестов</span>
                   : <span className={styles.Bad}>не пройдена — задача попадёт в PR с пометкой</span>}
               </Typography>
               {result.dryRun ? (
-                <Typography size={12} color="text-muted">
+                <Typography tag="p" size={12} color="text-muted">
                   Dry-run режим: pull request не создавался (включён PROPOSAL_DRY_RUN).
                 </Typography>
               ) : (
@@ -215,9 +216,9 @@ export default function TaskProposalModal({ open, onClose }: ITaskProposalModalP
 
         {phase === "error" && (
           <div>
-            <Typography size={18} mb={12}>❌ Не удалось сгенерировать задачу</Typography>
+            <Typography tag="h2" size={18} mb={12}>❌ Не удалось сгенерировать задачу</Typography>
             <div className={`${styles.ResultCard} ${styles.ErrorCard}`}>
-              <Typography size={13} className={styles.Pre}>{error}</Typography>
+              <Typography tag="p" size={13} className={styles.Pre}>{error}</Typography>
             </div>
             <div className={styles.Actions}>
               <Button size="sm" onClick={() => setPhase("form")}>Исправить описание</Button>
