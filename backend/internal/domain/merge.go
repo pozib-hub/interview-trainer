@@ -47,11 +47,23 @@ func MergeAppData(account, guest AppData) AppData {
 		}
 	}
 
+	// Повторения: свежее состояние (больше due = актуальнее) побеждает.
+	reviews := make(map[string]ReviewState, len(account.Reviews)+len(guest.Reviews))
+	for id, r := range account.Reviews {
+		reviews[id] = r
+	}
+	for id, r := range guest.Reviews {
+		if prev, ok := reviews[id]; !ok || r.Due > prev.Due {
+			reviews[id] = r
+		}
+	}
+
 	return AppData{
 		Solved:      solved,
 		Sessions:    sessions,
 		Code:        code,
 		Layout:      guest.Layout,
 		SolvedDates: solvedDates,
+		Reviews:     reviews,
 	}
 }

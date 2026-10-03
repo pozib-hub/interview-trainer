@@ -13,6 +13,7 @@ import { useAppData } from "@hooks/useAppData";
 import { fetchTask, runTests, requestHint, requestReview } from "@lib/taskApi";
 import type { TaskReview } from "@lib/types";
 import ReviewModal from "@components/ReviewModal";
+import ReviewBanner from "./Components/ReviewBanner/ReviewBanner";
 import TaskLoadingSkeleton from "./Components/TaskLoadingSkeleton/TaskLoadingSkeleton";
 import TaskConditionView from "./Components/TaskConditionView/TaskConditionView";
 import TaskToolbar from "./Components/TaskToolbar/TaskToolbar";
@@ -36,6 +37,8 @@ export default function TaskPageClient({ taskId }: { taskId: string }) {
   const [reviewLoading, setReviewLoading] = useState(false);
   const [reviewError, setReviewError] = useState("");
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [reviewWasDue, setReviewWasDue] = useState(false);
+  const [reviewJustDone, setReviewJustDone] = useState(false);
 
   const { layout, startDrag } = useResizableLayout();
   const app = useAppData();
@@ -70,12 +73,14 @@ export default function TaskPageClient({ taskId }: { taskId: string }) {
     setReview(null);
     setReviewError("");
     setReviewOpen(false);
+    setReviewJustDone(false);
     fetchTask(taskId)
       .then((data) => {
         setTask(data);
         if (data) {
           const saved = localStorage.getItem(STORAGE_PREFIX + taskId);
           setCode(saved ?? data.template);
+          setReviewWasDue(app.isReviewDue(taskId));
         }
       })
       .finally(() => setTaskLoading(false));
@@ -92,6 +97,16 @@ export default function TaskPageClient({ taskId }: { taskId: string }) {
       if (data.passed) {
         app.markSolved(taskId);
         app.saveCode(taskId, code);
+        // Задача была на повторении — засчитываем его.
+        if (reviewWasDue) {
+          app.completeReview(taskId, true);
+          setReviewWasDue(false);
+          setReviewJustDone(true);
+        }
+      } else if (reviewWasDue && data.total > 0) {
+        // Повторение провалено: интервальное состояние сбрасывается.
+        app.completeReview(taskId, false);
+        setReviewWasDue(false);
       }
     } catch (e) {
       setResult({
@@ -187,6 +202,12 @@ export default function TaskPageClient({ taskId }: { taskId: string }) {
           language={task.language}
           hintLoading={hintLoading}
           onHint={askHint}
+        />
+        <ReviewBanner
+          due={reviewWasDue}
+          justDone={reviewJustDone}
+          review={app.reviews[taskId]}
+          onStartFresh={() => setCode(task.template)}
         />
         <CodeEditor
           value={code}

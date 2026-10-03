@@ -4,6 +4,7 @@ import { Button, Typography } from "@ui/index";
 import { useAppData } from "@hooks/useAppData";
 import { fetchTopics } from "@lib/taskApi";
 import type { TaskSummary } from "@lib/types";
+import { humanInterval, daysUntil } from "@lib/review";
 import styles from "./ProgressPage.module.css";
 
 interface TopicStat {
@@ -90,6 +91,26 @@ export default function ProgressPage() {
   }, [stats, topics, solvedSet]);
 
   const sessions = app.sessions.slice(0, 8);
+
+  // Интервальное повторение: статистика и ближайшие повторения.
+  const reviewStats = useMemo(() => {
+    const all = Object.entries(app.reviews);
+    const now = Date.now();
+    const due = all.filter(([, r]) => r.due <= now);
+    const week = all.filter(([, r]) => r.due > now && r.due <= now + 7 * 86400000);
+    return { inRotation: all.length, due: due.length, week: week.length };
+  }, [app.reviews]);
+
+  const upcomingReviews = useMemo(() => {
+    const allTasks = Object.values(topics).flat();
+    const byId = new Map(allTasks.map((t) => [t.id, t]));
+    const now = Date.now();
+    return Object.entries(app.reviews)
+      .filter(([, r]) => r.due <= now + 7 * 86400000)
+      .sort((a, b) => a[1].due - b[1].due)
+      .slice(0, 6)
+      .map(([id, r]) => ({ id, title: byId.get(id)?.title ?? id, r }));
+  }, [topics, app.reviews]);
   const avgSessionScore = useMemo(() => {
     if (app.sessions.length === 0) return null;
     const scores = app.sessions.map((s) => {
@@ -200,6 +221,38 @@ export default function ProgressPage() {
                 Решить: {recommendation.next.title}
               </Button>
             </div>
+          </section>
+        )}
+
+        {reviewStats.inRotation > 0 && (
+          <section className={styles.Section}>
+            <Typography tag="h2" size={14} mb={12}>🔁 Интервальное повторение</Typography>
+            <div className={styles.ReviewStats}>
+              <div className={styles.ReviewStat}>
+                <span className={styles.ReviewStatValue}>{reviewStats.due}</span>
+                <span className={styles.ReviewStatLabel}>к повторению сегодня</span>
+              </div>
+              <div className={styles.ReviewStat}>
+                <span className={styles.ReviewStatValue}>{reviewStats.week}</span>
+                <span className={styles.ReviewStatLabel}>на этой неделе</span>
+              </div>
+              <div className={styles.ReviewStat}>
+                <span className={styles.ReviewStatValue}>{reviewStats.inRotation}</span>
+                <span className={styles.ReviewStatLabel}>в ротации</span>
+              </div>
+            </div>
+            {upcomingReviews.length > 0 && (
+              <div className={styles.ReviewList}>
+                {upcomingReviews.map(({ id, title, r }) => (
+                  <Link key={id} to={`/tasks/${encodeURIComponent(id)}`} className={styles.ReviewRow}>
+                    <span className={styles.ReviewTitle}>{title}</span>
+                    <span className={styles.ReviewWhen}>
+                      {r.due <= Date.now() ? "пора" : humanInterval(daysUntil(r))}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            )}
           </section>
         )}
 

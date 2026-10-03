@@ -123,3 +123,10 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+
+.ReviewBadge {
+  margin-left: auto;
+  font-size: 11px;
+  flex-shrink: 0;
+}

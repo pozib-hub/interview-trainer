@@ -13,6 +13,7 @@ interface ITaskTreeProps {
   topics: Record<string, TaskSummary[]>;
   isSolved: (taskId: string) => boolean;
   onToggleSolved: (taskId: string) => void;
+  isReviewDue?: (taskId: string) => boolean;
 }
 
 const DIFF_COLOR: Record<string, string> = {
@@ -22,7 +23,7 @@ const DIFF_COLOR: Record<string, string> = {
 };
 
 export default function TaskTree(props: ITaskTreeProps) {
-  const { topics, isSolved, onToggleSolved } = props;
+  const { topics, isSolved, onToggleSolved, isReviewDue } = props;
   const { pathname } = useLocation();
   const [query, setQuery] = useState("");
   const [hideSolved, setHideSolved] = useState(false);
@@ -112,6 +113,7 @@ export default function TaskTree(props: ITaskTreeProps) {
               currentId={currentId}
               isSolved={isSolved}
               onToggleSolved={onToggleSolved}
+              isReviewDue={isReviewDue}
             />
           );
         })

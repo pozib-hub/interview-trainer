@@ -16,6 +16,13 @@ type Layout struct {
 	LeftPane int `json:"leftPane"`
 }
 
+// ReviewState — состояние интервального повторения задачи (Anki-подобное).
+type ReviewState struct {
+	Due      int64 `json:"due"`      // unix ms, когда пора повторить
+	Interval int   `json:"interval"` // текущий интервал, дней
+	Reps     int   `json:"reps"`     // успешных повторений подряд
+}
+
 type AppData struct {
 	Solved   []string           `json:"solved"`
 	Sessions []InterviewSession `json:"sessions"`
@@ -24,6 +31,8 @@ type AppData struct {
 	// SolvedDates — когда задача была решена (taskId → unix ms).
 	// Для истории, которая была заведена до появления поля, дат нет.
 	SolvedDates map[string]int64 `json:"solvedDates,omitempty"`
+	// Reviews — интервальное повторение решённых задач (taskId → состояние).
+	Reviews map[string]ReviewState `json:"reviews,omitempty"`
 }
 
 func EmptyAppData() AppData {
@@ -33,5 +42,6 @@ func EmptyAppData() AppData {
 		Code:        map[string]string{},
 		Layout:      Layout{Sidebar: 280, LeftPane: 420},
 		SolvedDates: map[string]int64{},
+		Reviews:     map[string]ReviewState{},
 	}
 }

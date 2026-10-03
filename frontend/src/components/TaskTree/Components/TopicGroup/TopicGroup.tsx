@@ -13,6 +13,7 @@ interface ITopicGroupProps {
   currentId: string | null;
   isSolved: (taskId: string) => boolean;
   onToggleSolved: (taskId: string) => void;
+  isReviewDue?: (taskId: string) => boolean;
 }
 
 const DIFF_COLOR: Record<string, string> = {
@@ -22,7 +23,7 @@ const DIFF_COLOR: Record<string, string> = {
 };
 
 function TopicGroup(props: ITopicGroupProps) {
-  const { topic, tasks, currentId, isSolved, onToggleSolved } = props;
+  const { topic, tasks, currentId, isSolved, onToggleSolved, isReviewDue } = props;
 
   const solvedCount = tasks.filter((t) => isSolved(t.id)).length;
 
@@ -63,6 +64,11 @@ function TopicGroup(props: ITopicGroupProps) {
             <span className={cx("Label")} style={{ textDecoration: solved ? "line-through" : "none", opacity: solved ? 0.7 : 1 }}>
               {task.title}
             </span>
+            {isReviewDue?.(task.id) && (
+              <span className={cx("ReviewBadge")} title="Задача на повторении — реши её с чистого листа">
+                🔁
+              </span>
+            )}
           </Link>
         );
       })}

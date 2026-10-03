@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { apiFetch } from "@lib/fetchApi";
+import { initialReview, isDue, nextReview, type ReviewState } from "@lib/review";
 
 export interface InterviewSession {
   id: string;
@@ -24,6 +25,7 @@ export interface AppData {
   code: Record<string, string>;
   layout: { sidebar: number; leftPane: number };
   solvedDates: Record<string, number>;
+  reviews: Record<string, ReviewState>;
 }
 
 const LS_KEYS = {
@@ -31,6 +33,7 @@ const LS_KEYS = {
   sessions: "it:interview-history",
   layout: "it:layout",
   solvedDates: "it:solved-dates",
+  reviews: "it:reviews",
 };
 
 function loadFromStorage(): AppData {
@@ -38,6 +41,7 @@ function loadFromStorage(): AppData {
   let sessions: InterviewSession[] = [];
   let layout = { sidebar: 280, leftPane: 420 };
   let solvedDates: Record<string, number> = {};
+  let reviews: Record<string, ReviewState> = {};
   const code: Record<string, string> = {};
 
   try {
@@ -57,6 +61,10 @@ function loadFromStorage(): AppData {
     if (raw) solvedDates = JSON.parse(raw);
   } catch {}
   try {
+    const raw = localStorage.getItem(LS_KEYS.reviews);
+    if (raw) reviews = JSON.parse(raw);
+  } catch {}
+  try {
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key?.startsWith("it:code:")) {
@@ -65,7 +73,7 @@ function loadFromStorage(): AppData {
     }
   } catch {}
 
-  return { solved, sessions, code, layout, solvedDates };
+  return { solved, sessions, code, layout, solvedDates, reviews };
 }
 
 function saveToStorage(data: Partial<AppData>) {
@@ -77,6 +85,8 @@ function saveToStorage(data: Partial<AppData>) {
     localStorage.setItem(LS_KEYS.layout, JSON.stringify(data.layout));
   if (data.solvedDates !== undefined)
     localStorage.setItem(LS_KEYS.solvedDates, JSON.stringify(data.solvedDates));
+  if (data.reviews !== undefined)
+    localStorage.setItem(LS_KEYS.reviews, JSON.stringify(data.reviews));
   if (data.code !== undefined) {
     for (const [id, val] of Object.entries(data.code)) {
       localStorage.setItem("it:code:" + id, val);
@@ -98,6 +108,10 @@ export interface AppDataContextValue {
   clearHistory: () => void;
   saveCode: (taskId: string, code: string) => void;
   getCode: (taskId: string) => string | undefined;
+  reviews: Record<string, ReviewState>;
+  isReviewDue: (taskId: string) => boolean;
+  dueReviewIds: string[];
+  completeReview: (taskId: string, passed: boolean) => void;
 }
 
 const AppDataContext = createContext<AppDataContextValue | null>(null);
@@ -126,6 +140,7 @@ const EMPTY_DATA: AppData = {
   code: {},
   layout: { sidebar: 280, leftPane: 420 },
   solvedDates: {},
+  reviews: {},
 };
 
 export function AppDataProvider({ children }: { children: ReactNode }) {
@@ -150,12 +165,17 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
           for (const [id, at] of Object.entries(local.solvedDates ?? {})) {
             if (!solvedDates[id] || at > solvedDates[id]) solvedDates[id] = at;
           }
+          const reviews: Record<string, ReviewState> = { ...server.reviews };
+          for (const [id, r] of Object.entries(local.reviews ?? {})) {
+            if (!reviews[id] || r.due > reviews[id].due) reviews[id] = r;
+          }
           const merged: AppData = {
             solved: Array.from(new Set([...server.solved, ...local.solved])),
             sessions: mergeSessions(server.sessions, local.sessions),
             code: { ...server.code, ...local.code },
             layout: server.layout ?? local.layout,
             solvedDates,
+            reviews,
           };
           setData(merged);
           dataRef.current = merged;
@@ -165,7 +185,8 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
             merged.solved.length > server.solved.length ||
             merged.sessions.length > server.sessions.length ||
             Object.keys(merged.code).length > Object.keys(server.code).length ||
-            Object.keys(merged.solvedDates).length > Object.keys(server.solvedDates ?? {}).length
+            Object.keys(merged.solvedDates).length > Object.keys(server.solvedDates ?? {}).length ||
+            Object.keys(merged.reviews).length > Object.keys(server.reviews ?? {}).length
           ) {
             apiFetch("/api/data", {
               method: "POST",
@@ -209,15 +230,21 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       else set.add(taskId);
       const solved = [...set];
       let solvedDates = prev.solvedDates;
+      let reviews = prev.reviews;
       if (set.has(taskId)) {
         solvedDates = { ...prev.solvedDates, [taskId]: Date.now() };
+        if (!reviews[taskId]) {
+          reviews = { ...prev.reviews, [taskId]: initialReview() };
+        }
       } else {
         const { [taskId]: _drop, ...rest } = prev.solvedDates;
         solvedDates = rest;
+        const { [taskId]: _dropReview, ...restReviews } = prev.reviews;
+        reviews = restReviews;
       }
-      saveToStorage({ solved, solvedDates });
-      pendingPatch.current = { ...pendingPatch.current, solved, solvedDates };
-      setData({ ...prev, solved, solvedDates });
+      saveToStorage({ solved, solvedDates, reviews });
+      pendingPatch.current = { ...pendingPatch.current, solved, solvedDates, reviews };
+      setData({ ...prev, solved, solvedDates, reviews });
       scheduleSync();
     },
     [scheduleSync]
@@ -229,9 +256,12 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       if (prev.solved.includes(taskId)) return;
       const solved = [...prev.solved, taskId];
       const solvedDates = { ...prev.solvedDates, [taskId]: Date.now() };
-      saveToStorage({ solved, solvedDates });
-      pendingPatch.current = { ...pendingPatch.current, solved, solvedDates };
-      setData({ ...prev, solved, solvedDates });
+      const reviews = prev.reviews[taskId]
+        ? prev.reviews
+        : { ...prev.reviews, [taskId]: initialReview() };
+      saveToStorage({ solved, solvedDates, reviews });
+      pendingPatch.current = { ...pendingPatch.current, solved, solvedDates, reviews };
+      setData({ ...prev, solved, solvedDates, reviews });
       scheduleSync();
     },
     [scheduleSync]
@@ -244,9 +274,9 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
 
   const clearSolved = useCallback(() => {
     const prev = dataRef.current;
-    saveToStorage({ solved: [], solvedDates: {} });
-    pendingPatch.current = { ...pendingPatch.current, solved: [], solvedDates: {} };
-    setData({ ...prev, solved: [], solvedDates: {} });
+    saveToStorage({ solved: [], solvedDates: {}, reviews: {} });
+    pendingPatch.current = { ...pendingPatch.current, solved: [], solvedDates: {}, reviews: {} };
+    setData({ ...prev, solved: [], solvedDates: {}, reviews: {} });
     scheduleSync();
   }, [scheduleSync]);
 
@@ -289,6 +319,30 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     []
   );
 
+  const isReviewDue = useCallback(
+    (taskId: string) => isDue(dataRef.current.reviews[taskId]),
+    []
+  );
+
+  const dueReviewIds = useMemo(
+    () => Object.keys(data?.reviews ?? {}).filter((id) => isDue(data!.reviews[id])),
+    [data],
+  );
+
+  const completeReview = useCallback(
+    (taskId: string, passed: boolean) => {
+      const prev = dataRef.current;
+      const cur = prev.reviews[taskId];
+      if (!cur || !isDue(cur)) return;
+      const reviews = { ...prev.reviews, [taskId]: nextReview(cur, passed) };
+      saveToStorage({ reviews });
+      pendingPatch.current = { ...pendingPatch.current, reviews };
+      setData({ ...prev, reviews });
+      scheduleSync();
+    },
+    [scheduleSync]
+  );
+
   const value = useMemo<AppDataContextValue>(
     () => ({
       data,
@@ -304,6 +358,10 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       clearHistory,
       saveCode,
       getCode,
+      reviews: data?.reviews ?? {},
+      isReviewDue,
+      dueReviewIds,
+      completeReview,
     }),
     [data, loaded, isSolved, toggleSolved, markSolved, clearSolved, saveSession, getUsedTaskIds, clearHistory, saveCode, getCode]
   );
