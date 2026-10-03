@@ -27,19 +27,22 @@ type LLMClient struct {
 	MaxRetries int
 }
 
-func NewLLMClient(baseURL, model, apiKey string, timeout time.Duration) *LLMClient {
+func NewLLMClient(baseURL, model, apiKey string, timeout time.Duration, maxRetries int) *LLMClient {
 	if baseURL == "" {
 		baseURL = "https://api.deepseek.com/v1"
 	}
 	if model == "" {
 		model = "deepseek-chat"
 	}
+	if maxRetries < 0 {
+		maxRetries = 2
+	}
 	return &LLMClient{
 		BaseURL:    strings.TrimRight(baseURL, "/"),
 		Model:      model,
 		APIKey:     apiKey,
 		HTTPClient: &http.Client{Timeout: timeout},
-		MaxRetries: 2,
+		MaxRetries: maxRetries,
 	}
 }
 

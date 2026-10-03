@@ -61,7 +61,7 @@ func run() error {
 	proposalSvc := proposal.NewService(proposal.Options{
 		TasksRoot:  cfg.TasksDir,
 		Runner:     codeRunner,
-		LLM:        proposal.NewLLMClient(cfg.LLMBaseURL, cfg.LLMModel, cfg.LLMAPIKey, cfg.LLMTimeout),
+		LLM:        proposal.NewLLMClient(cfg.LLMBaseURL, cfg.LLMModel, cfg.LLMAPIKey, time.Duration(cfg.LLMTimeoutMS)*time.Millisecond, cfg.LLMMaxRetries),
 		LLMMock:    cfg.LLMMock,
 		GitHub:     proposal.NewGitHubClient(cfg.GitHubAPIBase, cfg.GitHubToken, cfg.GitHubRepo, 60*time.Second),
 		DryRun:     cfg.ProposalDryRun,

@@ -32,10 +32,14 @@ services:
       RUNTIME_DIR: /app/runtime
       RUN_TIMEOUT: 30s
       # Генерация задач: LLM (OpenAI-совместимый) + PR на GitHub.
+      # Фолбэки как в прошлом проекте: LLM_API_KEY || DEEPSEEK_API_KEY || OPENAI_API_KEY.
       LLM_BASE_URL: ${LLM_BASE_URL:-https://api.deepseek.com/v1}
       LLM_MODEL: ${LLM_MODEL:-deepseek-chat}
       LLM_API_KEY: ${LLM_API_KEY:-}
-      LLM_TIMEOUT: ${LLM_TIMEOUT:-90s}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      LLM_TIMEOUT_MS: ${LLM_TIMEOUT_MS:-90000}
+      LLM_MAX_RETRIES: ${LLM_MAX_RETRIES:-2}
       LLM_MOCK: ${LLM_MOCK:-false}
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       GITHUB_REPO: ${GITHUB_REPO:-pozib-hub/interview-trainer-v2}

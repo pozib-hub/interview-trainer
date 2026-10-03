@@ -182,7 +182,7 @@ func TestPRBody(t *testing.T) {
 }
 
 func TestLLMClient_TrimsBaseURL(t *testing.T) {
-	c := NewLLMClient("https://api.example.com/v1///", "model", "key", time.Second)
+	c := NewLLMClient("https://api.example.com/v1///", "model", "key", time.Second, 2)
 	if c.BaseURL != "https://api.example.com/v1" {
 		t.Errorf("BaseURL не обрезан: %q", c.BaseURL)
 	}

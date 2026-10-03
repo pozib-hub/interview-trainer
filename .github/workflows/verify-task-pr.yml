@@ -66,8 +66,8 @@ jobs:
         if: steps.tasks.outputs.ids != ''
         env:
           # ИИ-ревью семантики задач (условие ↔ тесты ↔ решение).
-          # Работает с тем же LLM, что и генерация задач в приложении.
-          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          # Та же цепочка секретов и дефолтов, что в прошлом проекте.
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY || secrets.DEEPSEEK_API_KEY || secrets.OPENAI_API_KEY }}
           LLM_BASE_URL: ${{ secrets.LLM_BASE_URL || 'https://api.deepseek.com/v1' }}
           LLM_MODEL: ${{ secrets.LLM_MODEL || 'deepseek-chat' }}
         run: |

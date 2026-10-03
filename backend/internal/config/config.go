@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
@@ -18,11 +19,14 @@ type Config struct {
 	CookieSecure bool          `env:"COOKIE_SECURE" env-default:"false"`
 
 	// Генерация задач через LLM (OpenAI-совместимый API) + PR на GitHub.
-	LLMBaseURL string        `env:"LLM_BASE_URL" env-default:"https://api.deepseek.com/v1"`
-	LLMModel   string        `env:"LLM_MODEL" env-default:"deepseek-chat"`
-	LLMAPIKey  string        `env:"LLM_API_KEY"`
-	LLMTimeout time.Duration `env:"LLM_TIMEOUT" env-default:"90s"`
-	LLMMock    bool          `env:"LLM_MOCK" env-default:"false"`
+	// Совместимо с прошлой версией проекта: те же имена переменных и фолбэки
+	// (LLM_API_KEY → DEEPSEEK_API_KEY → OPENAI_API_KEY).
+	LLMBaseURL    string `env:"LLM_BASE_URL" env-default:"https://api.deepseek.com/v1"`
+	LLMModel      string `env:"LLM_MODEL" env-default:"deepseek-chat"`
+	LLMAPIKey     string `env:"LLM_API_KEY"`
+	LLMTimeoutMS  int    `env:"LLM_TIMEOUT_MS" env-default:"90000"`
+	LLMMaxRetries int    `env:"LLM_MAX_RETRIES" env-default:"2"`
+	LLMMock       bool   `env:"LLM_MOCK" env-default:"false"`
 
 	GitHubToken      string `env:"GITHUB_TOKEN"`
 	GitHubRepo       string `env:"GITHUB_REPO" env-default:"pozib-hub/interview-trainer-v2"`
@@ -35,6 +39,13 @@ func Load() (*Config, error) {
 	var cfg Config
 	if err := cleanenv.ReadEnv(&cfg); err != nil {
 		return nil, fmt.Errorf("read config: %w", err)
+	}
+	// Фолбэки как в прошлом проекте: LLM_API_KEY || DEEPSEEK_API_KEY || OPENAI_API_KEY.
+	if cfg.LLMAPIKey == "" {
+		cfg.LLMAPIKey = os.Getenv("DEEPSEEK_API_KEY")
+	}
+	if cfg.LLMAPIKey == "" {
+		cfg.LLMAPIKey = os.Getenv("OPENAI_API_KEY")
 	}
 	return &cfg, nil
 }

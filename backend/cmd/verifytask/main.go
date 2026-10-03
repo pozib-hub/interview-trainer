@@ -6,7 +6,9 @@
 //	./verifytask -tasks ./backend/tasks -runtime ./backend/runtime -ids algorithms/220-foo
 //
 // ИИ-ревью включается автоматически, если задан LLM_API_KEY (или -llm-mock).
-// Переменные окружения: LLM_API_KEY, LLM_BASE_URL, LLM_MODEL, LLM_MOCK.
+// Переменные окружения (как в прошлом проекте):
+// LLM_API_KEY || DEEPSEEK_API_KEY || OPENAI_API_KEY, LLM_BASE_URL,
+// LLM_MODEL, LLM_TIMEOUT_MS, LLM_MAX_RETRIES, LLM_MOCK.
 package main
 
 import (
@@ -14,6 +16,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -29,6 +32,25 @@ func env(key, def string) string {
 	return def
 }
 
+func envInt(key string, def int) int {
+	if v := os.Getenv(key); v != "" {
+		if n, err := strconv.Atoi(v); err == nil {
+			return n
+		}
+	}
+	return def
+}
+
+// envAPIKey — цепочка как в прошлом проекте: LLM_API_KEY || DEEPSEEK_API_KEY || OPENAI_API_KEY.
+func envAPIKey() string {
+	for _, key := range []string{"LLM_API_KEY", "DEEPSEEK_API_KEY", "OPENAI_API_KEY"} {
+		if v := os.Getenv(key); v != "" {
+			return v
+		}
+	}
+	return ""
+}
+
 func main() {
 	var (
 		tasksDir   = flag.String("tasks", "./backend/tasks", "корневой каталог задач")
@@ -37,11 +59,13 @@ func main() {
 		idsFlag    = flag.String("ids", "", "список ID задач через запятую (тема/NNN-slug)")
 		timeout    = flag.Duration("timeout", 30*time.Second, "таймаут одного прогона")
 
-		llmAPIKey  = flag.String("llm-api-key", env("LLM_API_KEY", ""), "API-ключ LLM для ИИ-ревью (env LLM_API_KEY)")
-		llmBaseURL = flag.String("llm-base-url", env("LLM_BASE_URL", "https://api.deepseek.com/v1"), "base URL LLM (env LLM_BASE_URL)")
-		llmModel   = flag.String("llm-model", env("LLM_MODEL", "deepseek-chat"), "модель LLM (env LLM_MODEL)")
-		llmMock    = flag.Bool("llm-mock", env("LLM_MOCK", "") == "true", "мок ИИ-ревью без реального LLM")
-		noAI       = flag.Bool("no-ai", false, "отключить ИИ-ревью задач")
+		llmAPIKey    = flag.String("llm-api-key", envAPIKey(), "API-ключ LLM (env LLM_API_KEY/DEEPSEEK_API_KEY/OPENAI_API_KEY)")
+		llmBaseURL   = flag.String("llm-base-url", env("LLM_BASE_URL", "https://api.deepseek.com/v1"), "base URL LLM (env LLM_BASE_URL)")
+		llmModel     = flag.String("llm-model", env("LLM_MODEL", "deepseek-chat"), "модель LLM (env LLM_MODEL)")
+		llmTimeoutMS = flag.Int("llm-timeout-ms", envInt("LLM_TIMEOUT_MS", 90000), "таймаут LLM, мс (env LLM_TIMEOUT_MS)")
+		llmRetries   = flag.Int("llm-max-retries", envInt("LLM_MAX_RETRIES", 2), "ретраи LLM (env LLM_MAX_RETRIES)")
+		llmMock      = flag.Bool("llm-mock", env("LLM_MOCK", "") == "true", "мок ИИ-ревью без реального LLM")
+		noAI         = flag.Bool("no-ai", false, "отключить ИИ-ревью задач")
 	)
 	flag.Parse()
 
@@ -64,7 +88,8 @@ func main() {
 			checker.LLMMock = true
 			fmt.Fprintln(os.Stderr, "ИИ-ревью: мок")
 		} else {
-			checker.LLM = proposal.NewLLMClient(*llmBaseURL, *llmModel, *llmAPIKey, 90*time.Second)
+			checker.LLM = proposal.NewLLMClient(*llmBaseURL, *llmModel, *llmAPIKey,
+				time.Duration(*llmTimeoutMS)*time.Millisecond, *llmRetries)
 			fmt.Fprintf(os.Stderr, "ИИ-ревью: %s (%s)\n", *llmModel, *llmBaseURL)
 		}
 	} else {
