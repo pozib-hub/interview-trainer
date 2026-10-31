@@ -70,12 +70,16 @@ jobs:
           LLM_API_KEY: ${{ secrets.LLM_API_KEY || secrets.DEEPSEEK_API_KEY || secrets.OPENAI_API_KEY }}
           LLM_BASE_URL: ${{ secrets.LLM_BASE_URL || 'https://api.deepseek.com/v1' }}
           LLM_MODEL: ${{ secrets.LLM_MODEL || 'deepseek-chat' }}
+          # Security: список id задач строится из имён файлов PR (данные
+          # внешнего автора) — передаём через env, а не ${{ }} внутри run:,
+          # иначе произойдёт command injection.
+          TASK_IDS: ${{ steps.tasks.outputs.ids }}
         run: |
           set +e
           /tmp/verifytask \
             -tasks ./backend/tasks \
             -runtime ./backend/runtime \
-            -ids "${{ steps.tasks.outputs.ids }}" > /tmp/report.md
+            -ids "$TASK_IDS" > /tmp/report.md
           code=$?
           set -e
           echo "exit=$code" >> "$GITHUB_OUTPUT"

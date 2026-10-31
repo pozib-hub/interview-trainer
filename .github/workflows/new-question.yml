@@ -40,12 +40,23 @@ jobs:
 
       - name: Resolve issue number
         id: issue
+        env:
+          # Security: значения передаём через env, а не ${{ }} внутри run:
+          # иначе содержимое исполняется shell'ом (command injection).
+          ISSUE_INPUT: ${{ github.event.inputs.issue_number }}
+          ISSUE_EVENT_NUMBER: ${{ github.event.issue.number }}
         run: |
-          if [ -n "${{ github.event.inputs.issue_number }}" ]; then
-            echo "number=${{ github.event.inputs.issue_number }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "number=${{ github.event.issue.number }}" >> "$GITHUB_OUTPUT"
-          fi
+          num="$ISSUE_INPUT"
+          [ -n "$num" ] || num="$ISSUE_EVENT_NUMBER"
+          # Security: дальше номер интерполируется в другие шаги — гарантируем,
+          # что это строго число.
+          case "$num" in
+            ""|*[!0-9]*)
+              echo "Некорректный номер issue: '$num'" >&2
+              exit 1
+              ;;
+          esac
+          echo "number=$num" >> "$GITHUB_OUTPUT"
 
       - name: Создать лейблы если нет
         env:
@@ -97,8 +108,10 @@ jobs:
           LLM_MODEL: ${{ secrets.LLM_MODEL || 'deepseek-chat' }}
           QUESTIONS_ROOT: ${{ github.workspace }}/backend/questions
           SKIP_BUILD: "true"
+          # Security: заголовок issue (данные внешнего пользователя) передаём
+          # через env, а не ${{ }} внутри run: — иначе command injection.
+          ISSUE_TITLE: ${{ steps.issuedata.outputs.title }}
         run: |
-          export ISSUE_TITLE="${{ steps.issuedata.outputs.title }}"
           export ISSUE_BODY="$(cat /tmp/issue-body.md)"
           node .github/scripts/generate-question.mjs 2>&1 | tee /tmp/gen-output.txt
           code=${PIPESTATUS[0]}

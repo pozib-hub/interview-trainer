@@ -23,6 +23,12 @@ COPY tasks ./tasks
 COPY questions ./questions
 COPY runtime/package.json ./runtime/
 RUN npm config set registry ${NPM_REGISTRY} && cd runtime && npm install --omit=dev && npm cache clean --force
+# Security: сервер и раннер (в нём исполняется пользовательский код!) работают
+# под непривилегированным пользователем node — пользовательский код не может
+# изменять задачи, бинарь сервера и файлы образа. runtime нужен на запись:
+# туда при старте пишется worker.mjs.
+RUN mkdir -p /app/runtime && chown -R node:node /app/runtime
+USER node
 ENV TASKS_DIR=/app/tasks \
     QUESTIONS_DIR=/app/questions \
     RUNTIME_DIR=/app/runtime \
