@@ -23,7 +23,8 @@ import (
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/proposal"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/runner"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/scanner"
-	"github.com/pozib-hub/interview-trainer-v2/backend/internal/verify")
+	"github.com/pozib-hub/interview-trainer-v2/backend/internal/verify"
+)
 
 func env(key, def string) string {
 	if v := os.Getenv(key); v != "" {
@@ -61,7 +62,7 @@ func main() {
 
 		llmAPIKey    = flag.String("llm-api-key", envAPIKey(), "API-ключ LLM (env LLM_API_KEY/DEEPSEEK_API_KEY/OPENAI_API_KEY)")
 		llmBaseURL   = flag.String("llm-base-url", env("LLM_BASE_URL", "https://api.deepseek.com/v1"), "base URL LLM (env LLM_BASE_URL)")
-		llmModel     = flag.String("llm-model", env("LLM_MODEL", "deepseek-chat"), "модель LLM (env LLM_MODEL)")
+		llmModel     = flag.String("llm-model", env("LLM_MODEL", ""), "модель LLM, пусто = роутер выбирает сам (env LLM_MODEL)")
 		llmTimeoutMS = flag.Int("llm-timeout-ms", envInt("LLM_TIMEOUT_MS", 90000), "таймаут LLM, мс (env LLM_TIMEOUT_MS)")
 		llmRetries   = flag.Int("llm-max-retries", envInt("LLM_MAX_RETRIES", 2), "ретраи LLM (env LLM_MAX_RETRIES)")
 		llmMock      = flag.Bool("llm-mock", env("LLM_MOCK", "") == "true", "мок ИИ-ревью без реального LLM")

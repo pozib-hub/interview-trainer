@@ -31,9 +31,8 @@ func NewLLMClient(baseURL, model, apiKey string, timeout time.Duration, maxRetri
 	if baseURL == "" {
 		baseURL = "https://api.deepseek.com/v1"
 	}
-	if model == "" {
-		model = "deepseek-chat"
-	}
+	// model == "" допустимо: поле model не будет отправлено (роутер сам
+	// выберет модель).
 	if maxRetries < 0 {
 		maxRetries = 2
 	}
@@ -53,10 +52,12 @@ func (c *LLMClient) Chat(ctx context.Context, messages []llmMessage) (string, er
 	}
 
 	body := map[string]any{
-		"model":           c.Model,
 		"messages":        messages,
 		"temperature":     0.2,
 		"response_format": map[string]string{"type": "json_object"},
+	}
+	if c.Model != "" {
+		body["model"] = c.Model
 	}
 	payload, err := json.Marshal(body)
 	if err != nil {

@@ -211,9 +211,9 @@ func (h *Hub) HandleWS(w http.ResponseWriter, req *http.Request) {
 	c := &conn{
 		ws:   ws,
 		send: make(chan []byte, 64),
-		name:  name,
-		id:    roomID(),
-		room:  room,
+		name: name,
+		id:   roomID(),
+		room: room,
 	}
 	room.join(c)
 	h.log.Info("live join", "room", room.ID, "name", name)

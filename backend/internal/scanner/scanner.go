@@ -213,12 +213,12 @@ func (s *Scanner) GetTask(id string) (domain.TaskFull, bool) {
 	task := domain.TaskFull{
 		TaskSummary: domain.TaskSummary{
 			ID:         id,
-			Topic:       topic,
-			Slug:        slug,
-			Title:       meta.Title,
-			Difficulty:  meta.Difficulty,
-			Tags:        meta.Tags,
-			Language:    meta.Language,
+			Topic:      topic,
+			Slug:       slug,
+			Title:      meta.Title,
+			Difficulty: meta.Difficulty,
+			Tags:       meta.Tags,
+			Language:   meta.Language,
 		},
 		Condition: readSafe(filepath.Join(dir, "condition.md")),
 		Template:  readSafe(filepath.Join(dir, "template.ts")),

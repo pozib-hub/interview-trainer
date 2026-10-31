@@ -54,13 +54,13 @@ type SelfCheck struct {
 
 // Result — ответ на POST /api/task-proposal.
 type Result struct {
-	TaskID    string     `json:"taskId"`
-	Topic     string     `json:"topic"`
-	Slug      string     `json:"slug"`
-	Title     string     `json:"title"`
-	PRURL     string     `json:"prUrl"`
-	Branch    string     `json:"branch"`
-	DryRun    bool       `json:"dryRun"`
-	SelfCheck SelfCheck  `json:"selfCheck"`
-	Files     TaskFiles  `json:"-"`
+	TaskID    string    `json:"taskId"`
+	Topic     string    `json:"topic"`
+	Slug      string    `json:"slug"`
+	Title     string    `json:"title"`
+	PRURL     string    `json:"prUrl"`
+	Branch    string    `json:"branch"`
+	DryRun    bool      `json:"dryRun"`
+	SelfCheck SelfCheck `json:"selfCheck"`
+	Files     TaskFiles `json:"-"`
 }

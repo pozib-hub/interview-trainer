@@ -136,9 +136,9 @@ func TestParseJSONContent(t *testing.T) {
 
 func TestBuildUserMessage(t *testing.T) {
 	msg := BuildUserMessage(Input{
-		Title:       "Двухсумма",
-		SourceURL:   "https://leetcode.com/problems/two-sum/",
-		Description: "Найти индексы двух чисел, дающих target",
+		Title:        "Двухсумма",
+		SourceURL:    "https://leetcode.com/problems/two-sum/",
+		Description:  "Найти индексы двух чисел, дающих target",
 		UserSolution: "export function twoSum() {}",
 		Notes:        "нужен O(n)",
 	})
@@ -166,11 +166,11 @@ func TestBuildSystemMessage_ContainsCategoriesAndSchema(t *testing.T) {
 
 func TestPRBody(t *testing.T) {
 	res := &Result{
-		TaskID: "algorithms/220-digit-sum",
-		Title:  "Сумма цифр",
-		Topic:  "algorithms",
-		Slug:   "digit-sum",
-		Files:  BuildFileContents(mockTask()),
+		TaskID:    "algorithms/220-digit-sum",
+		Title:     "Сумма цифр",
+		Topic:     "algorithms",
+		Slug:      "digit-sum",
+		Files:     BuildFileContents(mockTask()),
 		SelfCheck: SelfCheck{Passed: true, Total: 3},
 	}
 	body := PRBody(res)

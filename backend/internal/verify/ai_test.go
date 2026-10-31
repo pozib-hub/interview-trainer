@@ -102,7 +102,7 @@ func TestReport_AIPanels(t *testing.T) {
 		{
 			TaskID: "array/001-bad", OK: false,
 			SolutionText: "0/4", TemplateText: "0/4",
-			Errors:       []string{"🤖 ИИ-ревью [condition]: Условие противоречит тестам"},
+			Errors: []string{"🤖 ИИ-ревью [condition]: Условие противоречит тестам"},
 			AI: &AIReview{
 				OK:      false,
 				Summary: "Есть ошибки",

@@ -32,14 +32,14 @@ type Checker struct {
 // (задача сводится к пояснению ответа, а не к реализации). Для них проверка
 // «шаблон должен проваливаться» пропускается.
 var oralTaskAllowlist = map[string]bool{
-	"my/001-1":           true,
-	"my/002-arr-to-obj":  true,
-	"react/001-1":        true,
-	"react/002-2":        true,
-	"this/007-15":        true,
-	"this/012-4":         true,
-	"this/010-2":         true,
-	"companies/001-1":    true,
+	"my/001-1":               true,
+	"my/002-arr-to-obj":      true,
+	"react/001-1":            true,
+	"react/002-2":            true,
+	"this/007-15":            true,
+	"this/012-4":             true,
+	"this/010-2":             true,
+	"companies/001-1":        true,
 	"companies/009-umschool": true,
 }
 
@@ -54,8 +54,8 @@ type CheckResult struct {
 	TemplateText  string
 	OralTask      bool
 	// AI — результат ИИ-ревью (nil = не выполнялось).
-	AI       *AIReview
-	AIError  string
+	AI      *AIReview
+	AIError string
 }
 
 func NewChecker(source TaskSource, r *runner.VitestRunner, timeout time.Duration) *Checker {

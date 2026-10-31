@@ -69,9 +69,9 @@ type vitestSuite struct {
 }
 
 type vitestJSON struct {
-	NumTotalTests  int `json:"numTotalTests"`
-	NumPassedTests int `json:"numPassedTests"`
-	NumFailedTests int `json:"numFailedTests"`
+	NumTotalTests  int           `json:"numTotalTests"`
+	NumPassedTests int           `json:"numPassedTests"`
+	NumFailedTests int           `json:"numFailedTests"`
 	TestResults    []vitestSuite `json:"testResults"`
 }
 
