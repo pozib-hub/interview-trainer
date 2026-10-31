@@ -15,6 +15,7 @@ import (
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/hint"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/jobs"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/live"
+	"github.com/pozib-hub/interview-trainer-v2/backend/internal/middleware"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/proposal"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/question"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/review"
@@ -22,6 +23,7 @@ import (
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/scanner"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/server"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/service"
+
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/storage/postgres"
 )
 
@@ -40,6 +42,11 @@ func run() error {
 
 	log := newLogger(cfg.Env)
 	slog.SetDefault(log)
+
+	trustedProxies, err := middleware.ParseCIDRs(cfg.TrustedProxies)
+	if err != nil {
+		return err
+	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
@@ -140,14 +147,15 @@ func run() error {
 	liveHub := live.NewHub(taskScanner, codeRunner, log)
 
 	srv := server.New(server.Deps{
-		Env:           cfg.Env,
-		Addr:          cfg.HTTPAddr,
-		Log:           log,
-		H:             h,
-		Users:         users,
-		Sessions:      sessions,
-		SecureCookies: cfg.CookieSecure,
-		LiveHub:       liveHub,
+		Env:            cfg.Env,
+		Addr:           cfg.HTTPAddr,
+		Log:            log,
+		H:              h,
+		Users:          users,
+		Sessions:       sessions,
+		SecureCookies:  cfg.CookieSecure,
+		LiveHub:        liveHub,
+		TrustedProxies: trustedProxies,
 	})
 
 	errCh := make(chan error, 1)

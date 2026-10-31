@@ -28,6 +28,9 @@ services:
       APP_ENV: prod
       HTTP_ADDR: :8080
       DATABASE_URL: postgres://${POSTGRES_USER:-trainer}:${POSTGRES_PASSWORD:-trainer}@postgres:5432/${POSTGRES_DB:-trainer}?sslmode=disable
+      # Security: прокси внутри docker-сетей, которым доверяем X-Real-IP
+      # для rate limiting (frontend-nginx ходит из 172.16.0.0/12).
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES:-172.16.0.0/12,127.0.0.1,::1}
       TASKS_DIR: /app/tasks
       QUESTIONS_DIR: /app/questions
       RUNTIME_DIR: /app/runtime
@@ -48,11 +51,22 @@ services:
       GITHUB_API_BASE: ${GITHUB_API_BASE:-https://api.github.com}
       PROPOSAL_BASE_BRANCH: ${PROPOSAL_BASE_BRANCH:-main}
       PROPOSAL_DRY_RUN: ${PROPOSAL_DRY_RUN:-false}
+      # Security: Secure-флаг cookie сессии. Включите (true) при работе за HTTPS,
+      # иначе браузер не пришлёт cookie по http.
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
     depends_on:
       postgres:
         condition: service_healthy
     ports:
       - "8080:8080"
+    # Security: ресурсные лимиты контейнера — в нём исполняется пользовательский
+    # код (раннер): ограничения памяти/CPU/PID не дают одной петле или fork-бомбе
+    # уронить хост. При выходе за лимиты контейнер будет перезапущен.
+    mem_limit: 2g
+    cpus: 2.0
+    pids_limit: 512
+    security_opt:
+      - no-new-privileges:true
 
   frontend:
     build:

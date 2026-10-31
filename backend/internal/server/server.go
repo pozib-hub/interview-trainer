@@ -2,6 +2,7 @@ package server
 
 import (
 	"log/slog"
+	"net"
 	"net/http"
 	"time"
 
@@ -17,14 +18,15 @@ import (
 )
 
 type Deps struct {
-	Env           string
-	Addr          string
-	Log           *slog.Logger
-	H             *handler.Handler
-	Users         storage.UserRepository
-	Sessions      storage.SessionRepository
-	SecureCookies bool
-	LiveHub       *live.Hub
+	Env            string
+	Addr           string
+	Log            *slog.Logger
+	H              *handler.Handler
+	Users          storage.UserRepository
+	Sessions       storage.SessionRepository
+	SecureCookies  bool
+	LiveHub        *live.Hub
+	TrustedProxies []*net.IPNet
 }
 
 func NewRouter(d Deps) http.Handler {
@@ -42,11 +44,19 @@ func NewRouter(d Deps) http.Handler {
 		}))
 	}
 
+	// Rate limiting (fixed window по IP клиента; за nginx — TRUSTED_PROXIES):
+	// brute-force логина, шторм LLM-задач (платный API), спам комнатами.
+	rlAuth := appmw.NewRateLimiter(10, time.Minute, d.TrustedProxies)
+	rlRun := appmw.NewRateLimiter(30, time.Minute, d.TrustedProxies)
+	rlLLM := appmw.NewRateLimiter(10, time.Minute, d.TrustedProxies)
+	rlRooms := appmw.NewRateLimiter(10, time.Minute, d.TrustedProxies)
+	rlWS := appmw.NewRateLimiter(30, time.Minute, d.TrustedProxies)
+
 	r.Get("/api/health", d.H.Health)
 
 	// Лайвкодинг: комнаты и websocket (без сессий — доступ по случайному коду).
-	r.Post("/api/live/rooms", d.LiveHub.HandleCreateRoom)
-	r.Get("/ws/live/{roomId}", d.LiveHub.HandleWS)
+	r.With(rlRooms.Middleware).Post("/api/live/rooms", d.LiveHub.HandleCreateRoom)
+	r.With(rlWS.Middleware).Get("/ws/live/{roomId}", d.LiveHub.HandleWS)
 
 	r.Group(func(r chi.Router) {
 		r.Use(auth.Middleware(auth.Deps{
@@ -57,15 +67,15 @@ func NewRouter(d Deps) http.Handler {
 
 		r.Get("/api/tasks", d.H.Tasks)
 		r.Get("/api/task/*", d.H.Task)
-		r.Post("/api/run", d.H.Run)
-		r.Post("/api/task-proposal", d.H.ProposeTask)
-		r.Post("/api/task-hint", d.H.TaskHint)
-		r.Post("/api/task-review", d.H.TaskReview)
+		r.With(rlRun.Middleware).Post("/api/run", d.H.Run)
+		r.With(rlLLM.Middleware).Post("/api/task-proposal", d.H.ProposeTask)
+		r.With(rlLLM.Middleware).Post("/api/task-hint", d.H.TaskHint)
+		r.With(rlLLM.Middleware).Post("/api/task-review", d.H.TaskReview)
 
 		r.Get("/api/questions", d.H.Questions)
-		r.Post("/api/question-interview/plan", d.H.QuestionInterviewPlan)
-		r.Post("/api/question-interview/analyze", d.H.QuestionInterviewAnalyze)
-		r.Post("/api/question-proposal", d.H.QuestionProposal)
+		r.With(rlLLM.Middleware).Post("/api/question-interview/plan", d.H.QuestionInterviewPlan)
+		r.With(rlLLM.Middleware).Post("/api/question-interview/analyze", d.H.QuestionInterviewAnalyze)
+		r.With(rlLLM.Middleware).Post("/api/question-proposal", d.H.QuestionProposal)
 		r.Get("/api/jobs/{id}", d.H.Job)
 
 		r.Route("/api/my-questions", func(r chi.Router) {
@@ -78,8 +88,8 @@ func NewRouter(d Deps) http.Handler {
 		r.Get("/api/data", d.H.GetData)
 		r.Post("/api/data", d.H.PatchData)
 
-		r.Post("/api/auth/register", d.H.Register)
-		r.Post("/api/auth/login", d.H.Login)
+		r.With(rlAuth.Middleware).Post("/api/auth/register", d.H.Register)
+		r.With(rlAuth.Middleware).Post("/api/auth/login", d.H.Login)
 		r.Post("/api/auth/logout", d.H.Logout)
 		r.Get("/api/auth/me", d.H.Me)
 	})

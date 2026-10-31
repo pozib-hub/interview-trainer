@@ -18,6 +18,9 @@ type Config struct {
 	NodeBin      string        `env:"NODE_BIN" env-default:"node"`
 	RunTimeout   time.Duration `env:"RUN_TIMEOUT" env-default:"20s"`
 	CookieSecure bool          `env:"COOKIE_SECURE" env-default:"false"`
+	// TrustedProxies — IP/CIDR прокси через запятую, которым доверяем
+	// заголовку X-Real-IP (нужно для rate limiting за nginx).
+	TrustedProxies string `env:"TRUSTED_PROXIES"`
 
 	// Генерация задач через LLM (OpenAI-совместимый API) + PR на GitHub.
 	// Совместимо с прошлой версией проекта: те же имена переменных и фолбэки
