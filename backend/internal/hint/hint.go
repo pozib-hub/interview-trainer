@@ -76,7 +76,7 @@ func (s *Service) Ask(ctx context.Context, req Request) (*Response, error) {
 	user := buildUserPrompt(task, req.Code, run, req.PreviousHints)
 	text, err := s.LLM.ChatRaw(ctx, systemPrompt, user)
 	if err != nil {
-		return nil, fmt.Errorf("%s", proposal.FriendlyLLMError(err))
+		return nil, proposal.ClassifyLLMError(err)
 	}
 	hint := strings.TrimSpace(text)
 	if hint == "" {

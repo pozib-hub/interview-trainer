@@ -93,7 +93,7 @@ func (s *Service) Propose(ctx context.Context, in Input) (*Result, error) {
 			raw, err = s.LLM.Chat(ctx, messages)
 		}
 		if err != nil {
-			return nil, fmt.Errorf("%s", FriendlyLLMError(err))
+			return nil, ClassifyLLMError(err)
 		}
 
 		data, err := ParseJSONContent(raw)
@@ -115,8 +115,10 @@ func (s *Service) Propose(ctx context.Context, in Input) (*Result, error) {
 		}
 
 		if attempt >= validationRetries {
-			return nil, fmt.Errorf("LLM вернул невалидный результат после %d попыток:\n%s",
-				attempt+1, strings.Join(lastErrors, "\n"))
+			return nil, &LLMError{
+				Code:    CodeValidation,
+				Message: fmt.Sprintf("ИИ вернул некорректную задачу после %d попыток — попробуйте переформулировать запрос", attempt+1),
+			}
 		}
 		s.Log.Warn("proposal validation retry", "attempt", attempt+1, "errors", lastErrors)
 		messages = append(messages,

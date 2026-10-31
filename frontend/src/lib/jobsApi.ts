@@ -22,6 +22,8 @@ export interface JobView {
   status: JobStatus;
   result?: unknown;
   error?: string;
+  /** Машинный код причины сбоя: network_error, timeout, llm_auth и т.д. */
+  errorCode?: string;
 }
 
 /** Запускает фоновую задачу: длительные LLM-операции выполняются на сервере,
@@ -50,7 +52,11 @@ export async function pollJob<T>(id: string, intervalMs = 2000): Promise<T> {
   for (;;) {
     const job = await fetchJob(id);
     if (job.status === "done") return job.result as T;
-    if (job.status === "failed") throw new Error(job.error || "Задача завершилась с ошибкой");
+    if (job.status === "failed") {
+      const err = new Error(job.error || "Задача завершилась с ошибкой") as Error & { code?: string };
+      err.code = job.errorCode;
+      throw err;
+    }
     await new Promise((r) => setTimeout(r, intervalMs));
   }
 }

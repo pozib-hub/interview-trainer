@@ -164,6 +164,8 @@ export interface QuestionJob {
   status: QuestionJobStatus;
   result?: unknown;
   error?: string;
+  /** Машинный код причины сбоя: network_error, timeout, llm_auth и т.д. */
+  errorCode?: string;
   createdAt: number;
   updatedAt: number;
 }

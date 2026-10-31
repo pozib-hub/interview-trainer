@@ -61,7 +61,10 @@ func (s *Service) Plan(ctx context.Context, req PlanRequest) (PlanResponse, erro
 		}
 	}
 	if direction == nil {
-		return PlanResponse{}, fmt.Errorf("направление «%s» не найдено", req.Direction)
+		return PlanResponse{}, &proposal.LLMError{
+			Code:    proposal.CodeInvalidRequest,
+			Message: fmt.Sprintf("направление «%s» не найдено", req.Direction),
+		}
 	}
 
 	selected := direction.Technologies
@@ -102,7 +105,10 @@ func (s *Service) Plan(ctx context.Context, req PlanRequest) (PlanResponse, erro
 	}
 
 	if len(pool) < minQuestions {
-		return PlanResponse{}, fmt.Errorf("слишком мало вопросов в выбранной комбинации — выберите больше технологий")
+		return PlanResponse{}, &proposal.LLMError{
+			Code:    proposal.CodeInvalidRequest,
+			Message: "слишком мало вопросов в выбранной комбинации — выберите больше технологий",
+		}
 	}
 
 	current := shuffled(pool)
@@ -225,7 +231,7 @@ func (s *Service) planLLM(ctx context.Context, sample, pool []domain.PlanQuestio
 
 	raw, err := s.LLM.ChatRaw(ctx, system, user)
 	if err != nil {
-		return resp, fmt.Errorf("%s", proposal.FriendlyLLMError(err))
+		return resp, proposal.ClassifyLLMError(err)
 	}
 	data, err := proposal.ParseJSONContent(raw)
 	if err != nil {

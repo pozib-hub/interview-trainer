@@ -29,6 +29,7 @@ type Job struct {
 	Status    JobStatus       `json:"status"`
 	Result    json.RawMessage `json:"result,omitempty"`
 	Error     string          `json:"error,omitempty"`
+	ErrorCode string          `json:"errorCode,omitempty"`
 	CreatedAt int64           `json:"createdAt"`
 	UpdatedAt int64           `json:"updatedAt"`
 }

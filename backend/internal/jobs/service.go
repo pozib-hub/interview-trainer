@@ -7,6 +7,7 @@ package jobs
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"time"
@@ -19,8 +20,8 @@ type Store interface {
 	Get(ctx context.Context, id, userID string) (domain.Job, error)
 	SetRunning(ctx context.Context, id string) error
 	SetResult(ctx context.Context, id string, result any) error
-	SetError(ctx context.Context, id, errMsg string) error
-	FailAllPending(ctx context.Context, reason string) (int64, error)
+	SetError(ctx context.Context, id, errMsg, errorCode string) error
+	FailAllPending(ctx context.Context, reason, errorCode string) (int64, error)
 }
 
 type Service struct {
@@ -58,19 +59,20 @@ func (s *Service) Get(ctx context.Context, id, userID string) (domain.Job, error
 	if job.Status == domain.JobPending || job.Status == domain.JobRunning {
 		if time.Since(time.UnixMilli(job.UpdatedAt)) > s.timeout() {
 			const staleMsg = "Задача выполнялась слишком долго и была остановлена — попробуйте ещё раз"
-			_ = s.Store.SetError(context.Background(), id, staleMsg)
+			_ = s.Store.SetError(context.Background(), id, staleMsg, "timeout")
 			job.Status = domain.JobFailed
 			job.Error = staleMsg
+			job.ErrorCode = "timeout"
 		}
 	}
 	return job, nil
 }
 
-func (s *Service) FailAllPending(ctx context.Context, reason string) {
+func (s *Service) FailAllPending(ctx context.Context, reason, errorCode string) {
 	if s.Store == nil {
 		return
 	}
-	if _, err := s.Store.FailAllPending(ctx, reason); err != nil {
+	if _, err := s.Store.FailAllPending(ctx, reason, errorCode); err != nil {
 		s.log().Error("fail pending jobs", "error", err)
 	}
 }
@@ -87,7 +89,14 @@ func (s *Service) run(jobID string, fn func(ctx context.Context) (any, error)) {
 	result, err := fn(ctx)
 	if err != nil {
 		s.log().Warn("job failed", "job", jobID, "error", err)
-		if cerr := s.Store.SetError(context.Background(), jobID, err.Error()); cerr != nil {
+		// errorCode — машинная причина сбоя (см. proposal.Code*):
+		// фронт и дебаг ветвятся по ней, а не по человекочитаемому тексту.
+		code := "unknown"
+		var coder interface{ ErrorCode() string }
+		if errors.As(err, &coder) {
+			code = coder.ErrorCode()
+		}
+		if cerr := s.Store.SetError(context.Background(), jobID, err.Error(), code); cerr != nil {
 			s.log().Error("job set error failed", "job", jobID, "error", cerr)
 		}
 		return

@@ -87,7 +87,7 @@ func (s *Service) Analyze(ctx context.Context, req []AnalyzeItem) (AnalyzeRespon
 
 	raw, err := s.LLM.ChatRaw(ctx, system, user)
 	if err != nil {
-		return AnalyzeResponse{}, fmt.Errorf("%s", proposal.FriendlyLLMError(err))
+		return AnalyzeResponse{}, proposal.ClassifyLLMError(err)
 	}
 	data, err := proposal.ParseJSONContent(raw)
 	if err != nil {

@@ -99,7 +99,7 @@ func (s *Service) Ask(ctx context.Context, req Request) (*Response, error) {
 	user := buildUserPrompt(task, req.Code, run)
 	raw, err := s.LLM.ChatRaw(ctx, systemPrompt, user)
 	if err != nil {
-		return nil, fmt.Errorf("%s", proposal.FriendlyLLMError(err))
+		return nil, proposal.ClassifyLLMError(err)
 	}
 	data, err := proposal.ParseJSONContent(raw)
 	if err != nil {

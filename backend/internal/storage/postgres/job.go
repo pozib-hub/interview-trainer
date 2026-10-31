@@ -23,9 +23,9 @@ func scanJob(row pgx.Row) (domain.Job, error) {
 	var j domain.Job
 	var request json.RawMessage
 	var result []byte
-	var errText *string
+	var errText, errCode *string
 	var createdAt, updatedAt time.Time
-	err := row.Scan(&j.ID, &j.UserID, &j.Kind, &j.Status, &request, &result, &errText, &createdAt, &updatedAt)
+	err := row.Scan(&j.ID, &j.UserID, &j.Kind, &j.Status, &request, &result, &errText, &errCode, &createdAt, &updatedAt)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return domain.Job{}, ErrNotFound
 	}
@@ -37,6 +37,9 @@ func scanJob(row pgx.Row) (domain.Job, error) {
 	}
 	if errText != nil {
 		j.Error = *errText
+	}
+	if errCode != nil {
+		j.ErrorCode = *errCode
 	}
 	j.CreatedAt = createdAt.UnixMilli()
 	j.UpdatedAt = updatedAt.UnixMilli()
@@ -51,13 +54,13 @@ func (r *JobRepo) Create(ctx context.Context, userID string, kind domain.JobKind
 	return scanJob(r.db.QueryRow(ctx,
 		`INSERT INTO llm_jobs (user_id, kind, request)
 		 VALUES ($1, $2, $3)
-		 RETURNING id, user_id, kind, status, request, result, error, created_at, updated_at`,
+		 RETURNING id, user_id, kind, status, request, result, error, error_code, created_at, updated_at`,
 		userID, kind, raw))
 }
 
 func (r *JobRepo) Get(ctx context.Context, id, userID string) (domain.Job, error) {
 	return scanJob(r.db.QueryRow(ctx,
-		`SELECT id, user_id, kind, status, request, result, error, created_at, updated_at
+		`SELECT id, user_id, kind, status, request, result, error, error_code, created_at, updated_at
 		 FROM llm_jobs WHERE id = $1 AND user_id = $2`, id, userID))
 }
 
@@ -79,17 +82,17 @@ func (r *JobRepo) SetResult(ctx context.Context, id string, result any) error {
 	return err
 }
 
-func (r *JobRepo) SetError(ctx context.Context, id, errMsg string) error {
+func (r *JobRepo) SetError(ctx context.Context, id, errMsg, errorCode string) error {
 	_, err := r.db.Exec(ctx,
-		`UPDATE llm_jobs SET status = 'failed', error = $2, updated_at = now()
-		 WHERE id = $1`, id, errMsg)
+		`UPDATE llm_jobs SET status = 'failed', error = $2, error_code = $3, updated_at = now()
+		 WHERE id = $1`, id, errMsg, errorCode)
 	return err
 }
 
-func (r *JobRepo) FailAllPending(ctx context.Context, reason string) (int64, error) {
+func (r *JobRepo) FailAllPending(ctx context.Context, reason, errorCode string) (int64, error) {
 	tag, err := r.db.Exec(ctx,
-		`UPDATE llm_jobs SET status = 'failed', error = $1, updated_at = now()
-		 WHERE status IN ('pending', 'running')`, reason)
+		`UPDATE llm_jobs SET status = 'failed', error = $1, error_code = $2, updated_at = now()
+		 WHERE status IN ('pending', 'running')`, reason, errorCode)
 	if err != nil {
 		return 0, err
 	}

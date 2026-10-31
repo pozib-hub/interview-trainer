@@ -156,7 +156,7 @@ func (s *ProposalService) askLLM(ctx context.Context, index domain.QuestionsInde
 
 	raw, err := s.LLM.ChatRaw(ctx, buildSystemMessage(index), buildUserMessage(req, prevErrors))
 	if err != nil {
-		return llmPayload{}, fmt.Errorf("%s", proposal.FriendlyLLMError(err))
+		return llmPayload{}, proposal.ClassifyLLMError(err)
 	}
 	data, err := proposal.ParseJSONContent(raw)
 	if err != nil {

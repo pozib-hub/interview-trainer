@@ -112,7 +112,7 @@ func run() error {
 		Store: jobRepo,
 		Log:   log,
 	}
-	jobSvc.FailAllPending(ctx, "Сервер перезапущен — задача прервана, запустите повторно")
+	jobSvc.FailAllPending(ctx, "Сервер перезапущен — задача прервана, запустите повторно", "server_restarted")
 	questionProposalSvc := &question.ProposalService{
 		GitHub:     proposal.NewGitHubClient(cfg.GitHubAPIBase, cfg.GitHubToken, cfg.GitHubRepo, 60*time.Second),
 		Scanner:    questionScanner,
