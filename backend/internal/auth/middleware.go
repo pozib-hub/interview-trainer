@@ -13,7 +13,7 @@ type ctxKeyUser struct{}
 const (
 	CookieName     = "sid"
 	SessionTTL     = 30 * 24 * time.Hour
-	MinPasswordLen = 6
+	MinPasswordLen = 8
 	MaxLoginLen    = 40
 	MinLoginLen    = 3
 )

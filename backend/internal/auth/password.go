@@ -24,6 +24,23 @@ func CheckPassword(hash, password string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) == nil
 }
 
+// dummyHash — валидный bcrypt-хэш для фиктивной сверки: когда логин не найден,
+// всё равно выполняем bcrypt-сравнение, чтобы время ответа не выдавало
+// существование аккаунта (защита от enumeraции по таймингу).
+var dummyHash = func() string {
+	h, err := bcrypt.GenerateFromPassword([]byte("timing-equalization-dummy"), bcrypt.DefaultCost)
+	if err != nil {
+		// недостижимо для валидного cost, но перестрахуемся
+		return "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy"
+	}
+	return string(h)
+}()
+
+// BurnPassword выполняет бесполезную bcrypt-сверку (выравнивание тайминга).
+func BurnPassword(password string) {
+	_ = CheckPassword(dummyHash, password)
+}
+
 func ValidateLogin(login string) bool {
 	if len(login) < MinLoginLen || len(login) > MaxLoginLen {
 		return false

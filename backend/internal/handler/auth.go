@@ -39,7 +39,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	user, err := h.auth.Register(r.Context(), currentUser(r), req.Login, req.Password)
 	switch {
 	case errors.Is(err, service.ErrInvalidInput):
-		writeError(w, http.StatusBadRequest, "Логин: 3–40 символов (a-z, 0-9, _ - .), пароль: минимум 6 символов")
+		writeError(w, http.StatusBadRequest, "Логин: 3–40 символов (a-z, 0-9, _ - .), пароль: минимум 8 символов")
 		return
 	case errors.Is(err, service.ErrLoginTaken):
 		writeError(w, http.StatusConflict, "Такой логин уже занят")

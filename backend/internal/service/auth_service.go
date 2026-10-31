@@ -51,6 +51,8 @@ func (s *AuthService) Register(ctx context.Context, currentUser domain.User, log
 func (s *AuthService) Login(ctx context.Context, guest domain.User, login, password string) (domain.User, error) {
 	account, err := s.users.FindByLogin(ctx, login)
 	if err != nil {
+		// Фиктивная сверка: время ответа не должно выдавать существование логина.
+		auth.BurnPassword(password)
 		return domain.User{}, ErrInvalidCredentials
 	}
 	if account.PasswordHash == "" || !auth.CheckPassword(account.PasswordHash, password) {
@@ -61,12 +63,11 @@ func (s *AuthService) Login(ctx context.Context, guest domain.User, login, passw
 		if err != nil {
 			return domain.User{}, err
 		}
-		accountData, err := s.states.Get(ctx, account.ID)
-		if err != nil {
-			return domain.User{}, err
-		}
-		merged := domain.MergeAppData(accountData, guestData)
-		if err := s.states.Save(ctx, account.ID, merged); err != nil {
+		// Merge через Patch (SELECT ... FOR UPDATE): два одновременных входа
+		// не затирают прогресс друг друга.
+		if _, err := s.states.Patch(ctx, account.ID, func(current domain.AppData) domain.AppData {
+			return domain.MergeAppData(current, guestData)
+		}); err != nil {
 			return domain.User{}, err
 		}
 		if s.userQuestions != nil {
