@@ -10,6 +10,7 @@ import {
 import SetupPhase from "./interview/components/SetupPhase";
 import SessionPhase from "./interview/components/SessionPhase";
 import ResultsPhase from "./interview/components/ResultsPhase";
+import ConfirmFinishModal from "./interview/components/ConfirmFinishModal";
 
 type Phase = "setup" | "planning" | "session" | "analyzing" | "results";
 
@@ -53,6 +54,7 @@ export default function QuestionInterviewPage() {
   const [analyzeError, setAnalyzeError] = useState("");
   const [results, setResults] = useState<ResultItem[] | null>(null);
   const [summary, setSummary] = useState("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
     fetchQuestionsIndex().then(setIndex).catch(() => setIndex({ directions: [] }));
@@ -228,8 +230,16 @@ export default function QuestionInterviewPage() {
 
   const finishEarly = () => {
     if (!planQuestions) return;
-    if (confirm(`Завершить досрочно и отправить ответы на разбор?`)) finish();
+    setConfirmOpen(true);
   };
+
+  const confirmFinish = () => {
+    setConfirmOpen(false);
+    void finish();
+  };
+
+  const answeredCount = () =>
+    (planQuestions ?? []).filter((q) => (answers[q.id] ?? "").trim().length > 0).length;
 
   const finish = async () => {
     const qs = planQuestions ?? [];
@@ -312,18 +322,27 @@ export default function QuestionInterviewPage() {
 
   if ((phase === "session" || phase === "analyzing") && planQuestions) {
     return (
-      <SessionPhase
-        questions={planQuestions}
-        current={current}
-        answers={answers}
-        onAnswer={onAnswer}
-        onGoTo={goTo}
-        onNext={next}
-        onFinishEarly={finishEarly}
-        startedAt={startedAt}
-        analyzing={phase === "analyzing"}
-        error={analyzeError}
-      />
+      <>
+        <SessionPhase
+          questions={planQuestions}
+          current={current}
+          answers={answers}
+          onAnswer={onAnswer}
+          onGoTo={goTo}
+          onNext={next}
+          onFinishEarly={finishEarly}
+          startedAt={startedAt}
+          analyzing={phase === "analyzing"}
+          error={analyzeError}
+        />
+        <ConfirmFinishModal
+          open={confirmOpen}
+          answered={answeredCount()}
+          total={planQuestions.length}
+          onCancel={() => setConfirmOpen(false)}
+          onConfirm={confirmFinish}
+        />
+      </>
     );
   }
 

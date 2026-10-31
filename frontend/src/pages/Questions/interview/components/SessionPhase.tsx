@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { PlanQuestion } from "@lib/types";
 import { useSpeechRecognition } from "@hooks/useSpeechRecognition";
-import { Spinner } from "@ui/index";
+import { Button, Spinner } from "@ui/index";
 import styles from "../interview.module.css";
 import qStyles from "../../questions.module.css";
 
@@ -105,17 +105,12 @@ export default function SessionPhase(props: ISessionPhaseProps) {
       />
 
       <div className={styles.SessionNav}>
-        <button
-          className={qStyles.ToolbarButton}
-          onClick={() => onGoTo(current - 1)}
-          disabled={current === 0}
-          style={current === 0 ? { opacity: 0.4, cursor: "not-allowed" } : undefined}
-        >
+        <Button size="lg" onClick={() => onGoTo(current - 1)} disabled={current === 0}>
           ← Предыдущий
-        </button>
-        <button className={styles.MicBtn} onClick={onNext} disabled={analyzing}>
+        </Button>
+        <Button size="lg" variant="primary" onClick={onNext} disabled={analyzing}>
           {isLast ? "Завершить и отправить на разбор ✓" : "Далее →"}
-        </button>
+        </Button>
         <span style={{ flex: 1 }} />
         <button className={styles.FinishLink} onClick={onFinishEarly} disabled={analyzing}>
           завершить досрочно
