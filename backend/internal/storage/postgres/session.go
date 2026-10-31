@@ -60,3 +60,11 @@ func (r *SessionRepo) Delete(ctx context.Context, token string) error {
 	_, err := r.db.Exec(ctx, `DELETE FROM sessions WHERE token_hash = $1`, auth.HashToken(token))
 	return err
 }
+
+func (r *SessionRepo) DeleteExpired(ctx context.Context) (int64, error) {
+	tag, err := r.db.Exec(ctx, `DELETE FROM sessions WHERE expires_at < now()`)
+	if err != nil {
+		return 0, err
+	}
+	return tag.RowsAffected(), nil
+}

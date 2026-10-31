@@ -95,3 +95,14 @@ func (r *JobRepo) FailAllPending(ctx context.Context, reason string) (int64, err
 	}
 	return tag.RowsAffected(), nil
 }
+
+// DeleteOlderThan удаляет завершённые задачи старше cutoff (ретеншн).
+func (r *JobRepo) DeleteOlderThan(ctx context.Context, olderThan time.Duration) (int64, error) {
+	tag, err := r.db.Exec(ctx,
+		`DELETE FROM llm_jobs WHERE created_at < now() - $1::interval AND status IN ('done', 'failed')`,
+		olderThan.String())
+	if err != nil {
+		return 0, err
+	}
+	return tag.RowsAffected(), nil
+}

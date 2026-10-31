@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 
@@ -62,4 +63,19 @@ func (r *UserRepo) Register(ctx context.Context, userID, login, passwordHash str
 func (r *UserRepo) Delete(ctx context.Context, userID string) error {
 	_, err := r.db.Exec(ctx, `DELETE FROM users WHERE id = $1`, userID)
 	return err
+}
+
+// DeleteStaleAnonymous удаляет анонимных пользователей без сессий старше
+// olderThan. app_state, user_questions и llm_jobs удаляются каскадом.
+func (r *UserRepo) DeleteStaleAnonymous(ctx context.Context, olderThan time.Duration) (int64, error) {
+	tag, err := r.db.Exec(ctx, `
+		DELETE FROM users
+		WHERE is_anonymous
+		  AND created_at < now() - $1::interval
+		  AND NOT EXISTS (SELECT 1 FROM sessions s WHERE s.user_id = users.id)`,
+		olderThan.String())
+	if err != nil {
+		return 0, err
+	}
+	return tag.RowsAffected(), nil
 }

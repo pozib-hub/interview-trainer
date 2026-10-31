@@ -23,7 +23,7 @@ import (
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/scanner"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/server"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/service"
-
+	"github.com/pozib-hub/interview-trainer-v2/backend/internal/storage"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/storage/postgres"
 )
 
@@ -146,6 +146,10 @@ func run() error {
 
 	liveHub := live.NewHub(taskScanner, codeRunner, log)
 
+	// Уборка: истёкшие сессии, старые LLM-задачи и брошенные анонимные
+	// аккаунты — иначе таблицы растут бесконечно (DoS по хранилищу).
+	go janitor(log, sessions, users, jobRepo)
+
 	srv := server.New(server.Deps{
 		Env:            cfg.Env,
 		Addr:           cfg.HTTPAddr,
@@ -186,4 +190,35 @@ func newLogger(env string) *slog.Logger {
 		return slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
 	}
 	return slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+}
+
+// janitor раз в час удаляет истёкшие сессии, LLM-задачи старше 30 дней
+// и анонимных пользователей без сессий старше 90 дней.
+func janitor(log *slog.Logger, sessions storage.SessionRepository, users storage.UserRepository, jobs *postgres.JobRepo) {
+	const (
+		sessionTick   = time.Hour
+		jobsRetention = 30 * 24 * time.Hour
+		anonRetention = 90 * 24 * time.Hour
+	)
+	run := func() {
+		if n, err := sessions.DeleteExpired(context.Background()); err != nil {
+			log.Error("janitor: delete expired sessions", "error", err)
+		} else if n > 0 {
+			log.Info("janitor: удалены истёкшие сессии", "count", n)
+		}
+		if n, err := jobs.DeleteOlderThan(context.Background(), jobsRetention); err != nil {
+			log.Error("janitor: delete old llm jobs", "error", err)
+		} else if n > 0 {
+			log.Info("janitor: удалены старые LLM-задачи", "count", n)
+		}
+		if n, err := users.DeleteStaleAnonymous(context.Background(), anonRetention); err != nil {
+			log.Error("janitor: delete stale anonymous users", "error", err)
+		} else if n > 0 {
+			log.Info("janitor: удалены брошенные анонимные аккаунты", "count", n)
+		}
+	}
+	run()
+	for range time.Tick(sessionTick) {
+		run()
+	}
 }
