@@ -181,7 +181,7 @@ func (r *VitestRunner) Run(ctx context.Context, task domain.TaskFull, userCode s
 		filepath.ToSlash(filepath.Join("tests", testFileName)),
 	)
 	cmd.Dir = r.runtimeDir
-	cmd.Env = append(os.Environ(), "NODE_NO_WARNINGS=1")
+	cmd.Env = sandboxEnv()
 
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
@@ -258,6 +258,27 @@ func (r *VitestRunner) Run(ctx context.Context, task domain.TaskFull, userCode s
 
 func needsTypecheck(testFile string) bool {
 	return strings.Contains(testFile, "expectTypeOf")
+}
+
+// sandboxEnv — минимальное окружение node-раннера. Пользовательский код
+// исполняется в этом процессе, поэтому окружение сервера (DATABASE_URL,
+// LLM_API_KEY, GITHUB_TOKEN и прочие переменные os.Environ()) ему недоступно.
+func sandboxEnv() []string {
+	keep := map[string]bool{
+		"PATH":   true,
+		"HOME":   true,
+		"TMPDIR": true,
+		"LANG":   true,
+		"LC_ALL": true,
+		"TZ":     true,
+	}
+	env := make([]string, 0, len(keep)+1)
+	for _, kv := range os.Environ() {
+		if i := strings.IndexByte(kv, '='); i > 0 && keep[kv[:i]] {
+			env = append(env, kv)
+		}
+	}
+	return append(env, "NODE_NO_WARNINGS=1")
 }
 
 // linkRuntimeModules создаёт симлинк node_modules в tmpDir, чтобы решение и тесты
