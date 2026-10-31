@@ -31,16 +31,6 @@
 Установка (обычная сеть): `brew install go` (или установщик с go.dev), Node — с nodejs.org,
 Docker Desktop — с docker.com.
 
-Установка Go в закрытой сети Vimpelcom (без доступа к ghcr.io / go.dev):
-
-```bash
-mkdir -p ~/sdk
-curl -o /tmp/go.tar.gz \
-  "https://nexus.vimpelcom.ru/repository/proxy__raw__godev.dl/go1.26.5.darwin-arm64.tar.gz"
-tar -C ~/sdk -xzf /tmp/go.tar.gz && mv ~/sdk/go ~/sdk/go1.26.5 && ln -sfn ~/sdk/go1.26.5 ~/sdk/go
-echo 'export PATH="$HOME/sdk/go/bin:$PATH"' >> ~/.zshrc   # если ещё не добавлено
-```
-
 ### 1. Получить проект
 
 ```bash
@@ -57,35 +47,6 @@ cd interview-trainer-v2
 ```bash
 cp .env.example .env
 ```
-
-В закрытой сети Vimpelcom дополнительно раскомментировать/добавать в `.env`:
-
-```dotenv
-NPM_REGISTRY=https://nexus.vimpelcom.ru/repository/npm-all/
-GOPROXY=https://nexus.vimpelcom.ru/repository/goproxy
-GOSUMDB=off
-POSTGRES_IMAGE=harbor.vimpelcom.ru/dockerhub/library/postgres:16-alpine
-GOLANG_IMAGE=harbor.vimpelcom.ru/dockerhub/library/golang:1.26-alpine
-NODE_IMAGE=harbor.vimpelcom.ru/dockerhub/library/node:22-alpine
-NGINX_IMAGE=harbor.vimpelcom.ru/dockerhub/nginxinc/nginx-unprivileged:alpine-slim
-```
-
-Go (один раз на машине, закрытая сеть):
-
-```bash
-go env -w GOPROXY=https://nexus.vimpelcom.ru/repository/goproxy
-go env -w GOSUMDB=off
-```
-
-npm — в закрытой сети создаём локальные registry-файлы (в git не попадают):
-
-```bash
-echo 'registry=https://nexus.vimpelcom.ru/repository/npm-all/' > frontend/.npmrc
-echo 'registry=https://nexus.vimpelcom.ru/repository/npm-all/' > backend/runtime/.npmrc
-```
-
-Docker-образы в закрытой сети тянутся через Harbor: предварительно
-`docker pull harbor.vimpelcom.ru/dockerhub/library/postgres:16-alpine` и т.д.
 
 ### 3. Установить зависимости
 

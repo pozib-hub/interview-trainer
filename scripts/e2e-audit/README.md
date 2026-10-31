@@ -5,16 +5,11 @@
 (из `solutions/`), запускаются тесты, затем тем же флоу отправляется
 шаблон задачи — ожидается, что решение проходит, а шаблон отклоняется.
 
-## Настройка (закрытая сеть)
+## Настройка
 
 ```bash
 cd scripts/e2e-audit
-# .npmrc с корпоративным registry (см. AGENTS.md)
 npm install
-
-# браузер через nexus-прокси + корпоративный CA
-export PLAYWRIGHT_DOWNLOAD_HOST=https://nexus.vimpelcom.ru/repository/proxy__raw__playwright-azureedge
-export NODE_EXTRA_CA_CERTS=<путь к corp-ca.pem>
 npx playwright install chromium
 ```
 

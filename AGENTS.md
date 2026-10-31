@@ -99,12 +99,3 @@ curl -X POST http://localhost:8080/api/run \
   -d '{"taskId":"algorithms/014-find-sum-pairs","code":"<код решения>"}'
 ```
 
-## Закрытая сеть (Vimpelcom)
-
-Прямой доступ в интернет отсутствует. Используются:
-
-- Go: `GOPROXY=https://nexus.vimpelcom.ru/repository/goproxy`, `GOSUMDB=off` (уже в `go env -w`)
-- npm: локальные `backend/runtime/.npmrc` и `frontend/.npmrc` → `nexus…/npm-all/` (в git не попадают)
-- Docker: образы через `harbor.vimpelcom.ru/dockerhub/…` (переменные в `.env`)
-- Корпоративные CA: `backend/certs/`, `frontend/certs/` (в git не попадают)
-- Go toolchain: `~/sdk/go` (PATH добавлен в `~/.zshrc`)
