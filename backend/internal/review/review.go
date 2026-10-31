@@ -56,9 +56,9 @@ type Response struct {
 
 var verdicts = map[string]string{
 	"strong-hire": "сильный кандидат",
-	"hire":         "наём",
-	"lean-hire":    "наём с оговорками",
-	"no-hire":      "не наём",
+	"hire":        "наём",
+	"lean-hire":   "наём с оговорками",
+	"no-hire":     "не наём",
 }
 
 const systemPrompt = `Ты — опытный технический интервьюер на JS/TS-собеседовании (senior-уровень). Кандидат работал над задачей тренажёра и просит разобрать его код — как это было бы на реальном собеседовании.
@@ -99,7 +99,7 @@ func (s *Service) Ask(ctx context.Context, req Request) (*Response, error) {
 	user := buildUserPrompt(task, req.Code, run)
 	raw, err := s.LLM.ChatRaw(ctx, systemPrompt, user)
 	if err != nil {
-		return nil, fmt.Errorf("llm: %w", err)
+		return nil, fmt.Errorf("%s", proposal.FriendlyLLMError(err))
 	}
 	data, err := proposal.ParseJSONContent(raw)
 	if err != nil {
@@ -139,22 +139,22 @@ func VerdictLabel(v string) string {
 func mockReview(run domain.RunResult) *Response {
 	if run.Failed > 0 || run.Total == 0 {
 		return &Response{
-			Verdict: "no-hire",
-			Summary: "[мок-ревью] Решение не проходит тесты — на собеседовании это прежде всего повод разобраться, где ломается логика.",
-			Strengths: []string{"код в целом читаемый"},
+			Verdict:      "no-hire",
+			Summary:      "[мок-ревью] Решение не проходит тесты — на собеседовании это прежде всего повод разобраться, где ломается логика.",
+			Strengths:    []string{"код в целом читаемый"},
 			Improvements: []string{"проверь проваливающиеся тесты", "обработай краевые случаи"},
-			Questions: []string{"как ты сам проверял решение перед запуском тестов?"},
-			Complexity: "O(?)",
-			Comparison: "пока не сравнить — решение некорректно",
+			Questions:    []string{"как ты сам проверял решение перед запуском тестов?"},
+			Complexity:   "O(?)",
+			Comparison:   "пока не сравнить — решение некорректно",
 		}
 	}
 	return &Response{
-		Verdict: "hire",
-		Summary: "[мок-ревью] Решение корректно проходит все тесты и выглядит рабочим — на собеседовании за это бы зачли, но обсудили бы детали.",
-		Strengths: []string{"все тесты пройдены", "понятная структура кода"},
+		Verdict:      "hire",
+		Summary:      "[мок-ревью] Решение корректно проходит все тесты и выглядит рабочим — на собеседовании за это бы зачли, но обсудили бы детали.",
+		Strengths:    []string{"все тесты пройдены", "понятная структура кода"},
 		Improvements: []string{"можно упростить читаемость", "подумать об асимптотике"},
-		Questions: []string{"какова сложность твоего решения?", "как поведёт себя код на больших входах?"},
-		Complexity: "O(n) время, O(1) память (мок-оценка)",
-		Comparison: "подход похож на эталонный; различия обсудил бы интервьюер",
+		Questions:    []string{"какова сложность твоего решения?", "как поведёт себя код на больших входах?"},
+		Complexity:   "O(n) время, O(1) память (мок-оценка)",
+		Comparison:   "подход похож на эталонный; различия обсудил бы интервьюер",
 	}
 }

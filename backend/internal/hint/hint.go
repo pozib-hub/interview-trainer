@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/domain"
+	"github.com/pozib-hub/interview-trainer-v2/backend/internal/proposal"
 )
 
 // LLMChat — минимальный интерфейс LLM (реализация *proposal.LLMClient).
@@ -75,7 +76,7 @@ func (s *Service) Ask(ctx context.Context, req Request) (*Response, error) {
 	user := buildUserPrompt(task, req.Code, run, req.PreviousHints)
 	text, err := s.LLM.ChatRaw(ctx, systemPrompt, user)
 	if err != nil {
-		return nil, fmt.Errorf("llm: %w", err)
+		return nil, fmt.Errorf("%s", proposal.FriendlyLLMError(err))
 	}
 	hint := strings.TrimSpace(text)
 	if hint == "" {
