@@ -24,14 +24,14 @@ type TaskRunner interface {
 
 // Options — конфигурация сервиса предложений.
 type Options struct {
-	TasksRoot   string
-	Runner      TaskRunner
-	LLM         *LLMClient
-	LLMMock     bool
-	GitHub      *GitHubClient
-	DryRun      bool // не ходить в GitHub, вернуть локальный результат
-	BaseBranch  string
-	Log         *slog.Logger
+	TasksRoot  string
+	Runner     TaskRunner
+	LLM        *LLMClient
+	LLMMock    bool
+	GitHub     *GitHubClient
+	DryRun     bool // не ходить в GitHub, вернуть локальный результат
+	BaseBranch string
+	Log        *slog.Logger
 }
 
 // Service оркестрирует: форма → LLM (с retry по ошибкам валидации) → сборка
@@ -93,7 +93,7 @@ func (s *Service) Propose(ctx context.Context, in Input) (*Result, error) {
 			raw, err = s.LLM.Chat(ctx, messages)
 		}
 		if err != nil {
-			return nil, fmt.Errorf("генерация через LLM: %w", err)
+			return nil, fmt.Errorf("%s", FriendlyLLMError(err))
 		}
 
 		data, err := ParseJSONContent(raw)
@@ -145,11 +145,11 @@ func (s *Service) Propose(ctx context.Context, in Input) (*Result, error) {
 	res.Branch = branch
 
 	fileMap := map[string]string{
-		filepath.Join("backend", "tasks", task.Topic, num+"-"+task.Slug, "meta.json"):         files.MetaJSON,
-		filepath.Join("backend", "tasks", task.Topic, num+"-"+task.Slug, "condition.md"):      files.Condition,
-		filepath.Join("backend", "tasks", task.Topic, num+"-"+task.Slug, "template.ts"):       files.Template,
-		filepath.Join("backend", "tasks", task.Topic, num+"-"+task.Slug, "solution.ts"):       files.Solution,
-		filepath.Join("backend", "tasks", task.Topic, num+"-"+task.Slug, "hints.md"):          files.Hints,
+		filepath.Join("backend", "tasks", task.Topic, num+"-"+task.Slug, "meta.json"):        files.MetaJSON,
+		filepath.Join("backend", "tasks", task.Topic, num+"-"+task.Slug, "condition.md"):     files.Condition,
+		filepath.Join("backend", "tasks", task.Topic, num+"-"+task.Slug, "template.ts"):      files.Template,
+		filepath.Join("backend", "tasks", task.Topic, num+"-"+task.Slug, "solution.ts"):      files.Solution,
+		filepath.Join("backend", "tasks", task.Topic, num+"-"+task.Slug, "hints.md"):         files.Hints,
 		filepath.Join("backend", "tasks", task.Topic, num+"-"+task.Slug, "tests", "test.ts"): files.Test,
 	}
 
@@ -160,7 +160,7 @@ func (s *Service) Propose(ctx context.Context, in Input) (*Result, error) {
 		return res, nil
 	}
 
-	prURL, err := s.GitHub.CreateTaskBranchAndPR(ctx, branch, s.BaseBranch, fileMap,
+	prURL, err := s.GitHub.CreateBranchAndPR(ctx, branch, s.BaseBranch, fileMap,
 		"Задача: "+task.Title, PRBody(res))
 	if err != nil {
 		return nil, fmt.Errorf("создание pull request: %w", err)

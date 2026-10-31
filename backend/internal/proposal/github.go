@@ -15,10 +15,10 @@ import (
 // GitHubClient создаёт ветку с файлами задачи и draft-PR через Git Data API
 // (без git-бинаря: blobs → tree → commit → ref → pull request).
 type GitHubClient struct {
-	APIBase     string
-	Token       string
-	Repo        string // owner/name
-	HTTPClient  *http.Client
+	APIBase    string
+	Token      string
+	Repo       string // owner/name
+	HTTPClient *http.Client
 }
 
 func NewGitHubClient(apiBase, token, repo string, timeout time.Duration) *GitHubClient {
@@ -71,9 +71,32 @@ func (g *GitHubClient) call(ctx context.Context, method, path string, body any, 
 	return nil
 }
 
-// CreateTaskBranchAndPR создаёт ветку с 6 файлами задачи и draft-PR.
+// GetFileContent возвращает содержимое файла из репозитория по ref.
+func (g *GitHubClient) GetFileContent(ctx context.Context, path, ref string) (string, error) {
+	var file struct {
+		Content  string `json:"content"`
+		Encoding string `json:"encoding"`
+	}
+	q := ""
+	if ref != "" {
+		q = "?ref=" + ref
+	}
+	if err := g.call(ctx, http.MethodGet, "/repos/"+g.Repo+"/contents/"+path+q, nil, &file); err != nil {
+		return "", fmt.Errorf("получить файл %s: %w", path, err)
+	}
+	if file.Encoding != "base64" {
+		return "", fmt.Errorf("файл %s: неожиданная кодировка %q", path, file.Encoding)
+	}
+	raw, err := base64.StdEncoding.DecodeString(strings.ReplaceAll(file.Content, "\n", ""))
+	if err != nil {
+		return "", fmt.Errorf("декодировать %s: %w", path, err)
+	}
+	return string(raw), nil
+}
+
+// CreateBranchAndPR создаёт ветку с 6 файлами задачи и draft-PR.
 // Возвращает URL PR.
-func (g *GitHubClient) CreateTaskBranchAndPR(ctx context.Context, branch, baseBranch string, files map[string]string, title, body string) (string, error) {
+func (g *GitHubClient) CreateBranchAndPR(ctx context.Context, branch, baseBranch string, files map[string]string, title, body string) (string, error) {
 	// 1. Базовый ref
 	var ref struct {
 		Object struct {
@@ -108,10 +131,10 @@ func (g *GitHubClient) CreateTaskBranchAndPR(ctx context.Context, branch, baseBr
 			return "", fmt.Errorf("создать blob %s: %w", path, err)
 		}
 		tree = append(tree, map[string]any{
-			"path":     path,
-			"mode":     "100644",
-			"type":     "blob",
-			"sha":      blob.SHA,
+			"path": path,
+			"mode": "100644",
+			"type": "blob",
+			"sha":  blob.SHA,
 		})
 	}
 
