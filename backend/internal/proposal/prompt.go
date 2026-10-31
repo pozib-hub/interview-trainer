@@ -139,9 +139,11 @@ func BuildUserMessage(in Input) string {
 	}
 	sb.WriteString("\n")
 	if in.UserSolution != "" {
-		sb.WriteString("\n## Решение пользователя (проверь и оформи как solutionCode)\n```ts\n")
+		// 4 обратных апострофа: решение пользователя может содержать ``` и
+		// «закрыть» обычный фенс (prompt injection в системный промпт).
+		sb.WriteString("\n## Решение пользователя (проверь и оформи как solutionCode)\n````ts\n")
 		sb.WriteString(in.UserSolution)
-		sb.WriteString("\n```\n")
+		sb.WriteString("\n````\n")
 	}
 	if in.Notes != "" {
 		sb.WriteString("\n## Дополнительные заметки\n")

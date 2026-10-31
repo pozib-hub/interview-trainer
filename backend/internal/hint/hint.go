@@ -89,7 +89,9 @@ func buildUserPrompt(task domain.TaskFull, code string, run domain.RunResult, pr
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "# Задача: %s\n\n%s\n\n", task.Title, task.Condition)
 
-	fmt.Fprintf(&sb, "# Код пользователя (текущее состояние)\n```ts\n%s\n```\n\n", code)
+	// 4 обратных апострофа: код пользователя может содержать ``` и «закрыть»
+	// обычный фенс — это открыло бы prompt injection в системный промпт.
+	fmt.Fprintf(&sb, "# Код пользователя (текущее состояние)\n````ts\n%s\n````\n\n", code)
 
 	fmt.Fprintf(&sb, "# Результат запуска тестов\n%s\n\n", RunSummary(run))
 

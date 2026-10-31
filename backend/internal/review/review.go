@@ -121,7 +121,9 @@ func (s *Service) Ask(ctx context.Context, req Request) (*Response, error) {
 func buildUserPrompt(task domain.TaskFull, code string, run domain.RunResult) string {
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "# Задача: %s\n\n%s\n\n", task.Title, task.Condition)
-	fmt.Fprintf(&sb, "# Код кандидата\n```ts\n%s\n```\n\n", code)
+	// 4 обратных апострофа: код пользователя может содержать ``` и «закрыть»
+	// обычный фенс — это открыло бы prompt injection в системный промпт.
+	fmt.Fprintf(&sb, "# Код кандидата\n````ts\n%s\n````\n\n", code)
 	fmt.Fprintf(&sb, "# Результат запуска тестов\n%s\n\n", hint.RunSummary(run))
 	fmt.Fprintf(&sb, "# Эталонное решение\n```ts\n%s\n```\n\n", task.Solution)
 	sb.WriteString("Разбери код кандидата и верни JSON по схеме.")

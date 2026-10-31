@@ -134,8 +134,12 @@ func ValidateTask(t *GeneratedTask, allowedTopics []string, tasksRoot string) []
 	if t.Source != nil {
 		if t.Source.Name == "" || t.Source.URL == "" {
 			errors = append(errors, "source.name и source.url обязательны, если source задан.")
-		} else if _, err := url.ParseRequestURI(t.Source.URL); err != nil {
+		} else if u, err := url.ParseRequestURI(t.Source.URL); err != nil {
 			errors = append(errors, fmt.Sprintf("source.url некорректен: %s", t.Source.URL))
+		} else if u.Scheme != "http" && u.Scheme != "https" {
+			// URL попадает в markdown условия задачи: разрешаем только http(s),
+			// иначе javascript: и прочие схемы станут инъекцией при рендере.
+			errors = append(errors, fmt.Sprintf("source.url должен начинаться с http:// или https:// (получено %q).", u.Scheme))
 		}
 	}
 
