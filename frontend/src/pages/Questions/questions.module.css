@@ -417,18 +417,6 @@
   border-color: var(--accent);
 }
 
-.FormActions {
-  display: flex;
-  gap: 8px;
-}
-
-.MyQuestionsSection {
-  margin-top: 28px;
-}
-
-.CardAccent {
-  border-style: dashed;
-}
 
 /* ─── Баннер устного собеседования ───────────────────────── */
 

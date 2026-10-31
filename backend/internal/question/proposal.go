@@ -22,6 +22,12 @@ type GitHubPR interface {
 	CreateBranchAndPR(ctx context.Context, branch, baseBranch string, files map[string]string, title, body string) (string, error)
 }
 
+// Лимиты полей формы «Предложить вопрос».
+const (
+	maxUserQuestionLen = 2000
+	maxUserAnswerLen   = 20000
+)
+
 // ProposalService оформляет вопрос через LLM (выбирает направление,
 // технологию и главу, пишет полный ответ) и создаёт draft Pull Request
 // в общий сборник.

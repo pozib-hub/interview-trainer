@@ -123,15 +123,6 @@ export interface QuestionsIndex {
   directions: QuestionsDirection[];
 }
 
-export interface UserQuestion {
-  id: string;
-  question: string;
-  answer: string;
-  category?: string;
-  createdAt: number;
-  updatedAt: number;
-}
-
 export interface PlanQuestion {
   id: string;
   question: string;

@@ -17,18 +17,13 @@ var (
 )
 
 type AuthService struct {
-	users         storage.UserRepository
-	sessions      storage.SessionRepository
-	states        storage.StateRepository
-	userQuestions UserQuestionTransfer
+	users    storage.UserRepository
+	sessions storage.SessionRepository
+	states   storage.StateRepository
 }
 
-type UserQuestionTransfer interface {
-	TransferAll(ctx context.Context, fromUserID, toUserID string) error
-}
-
-func NewAuthService(users storage.UserRepository, sessions storage.SessionRepository, states storage.StateRepository, userQuestions UserQuestionTransfer) *AuthService {
-	return &AuthService{users: users, sessions: sessions, states: states, userQuestions: userQuestions}
+func NewAuthService(users storage.UserRepository, sessions storage.SessionRepository, states storage.StateRepository) *AuthService {
+	return &AuthService{users: users, sessions: sessions, states: states}
 }
 
 func (s *AuthService) Register(ctx context.Context, currentUser domain.User, login, password string) (domain.User, error) {
@@ -69,11 +64,6 @@ func (s *AuthService) Login(ctx context.Context, guest domain.User, login, passw
 			return domain.MergeAppData(current, guestData)
 		}); err != nil {
 			return domain.User{}, err
-		}
-		if s.userQuestions != nil {
-			if err := s.userQuestions.TransferAll(ctx, guest.ID, account.ID); err != nil {
-				return domain.User{}, err
-			}
 		}
 		_ = s.users.Delete(ctx, guest.ID)
 	}

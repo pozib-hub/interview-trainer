@@ -10,7 +10,6 @@ import QuestionsLayout from "./pages/Questions/QuestionsLayout";
 import QuestionsIndexPage from "./pages/Questions/QuestionsIndexPage";
 import DirectionPage from "./pages/Questions/DirectionPage";
 import TechnologyPage from "./pages/Questions/TechnologyPage";
-import MyQuestionsPage from "./pages/Questions/MyQuestionsPage";
 import QuestionInterviewPage from "./pages/Questions/QuestionInterviewPage";
 
 export default function App() {
@@ -28,7 +27,6 @@ export default function App() {
 
         <Route path="/questions" element={<QuestionsLayout />}>
           <Route index element={<QuestionsIndexPage />} />
-          <Route path="my" element={<MyQuestionsPage />} />
           <Route path="interview" element={<QuestionInterviewPage />} />
           <Route path=":direction" element={<DirectionPage />} />
           <Route path=":direction/:technology" element={<TechnologyPage />} />

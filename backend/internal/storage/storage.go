@@ -31,10 +31,3 @@ type SessionRepository interface {
 	DeleteExpired(ctx context.Context) (int64, error)
 }
 
-type UserQuestionRepository interface {
-	List(ctx context.Context, userID string) ([]domain.UserQuestion, error)
-	Create(ctx context.Context, userID string, question, answer, category string) (domain.UserQuestion, error)
-	Update(ctx context.Context, id, userID, question, answer, category string) (domain.UserQuestion, error)
-	Delete(ctx context.Context, id, userID string) (bool, error)
-	TransferAll(ctx context.Context, fromUserID, toUserID string) error
-}

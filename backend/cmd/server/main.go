@@ -63,7 +63,6 @@ func run() error {
 	users := postgres.NewUserRepo(pool)
 	sessions := postgres.NewSessionRepo(pool)
 	states := postgres.NewStateRepo(pool)
-	userQuestions := postgres.NewUserQuestionRepo(pool)
 	jobRepo := postgres.NewJobRepo(pool)
 
 	taskScanner := scanner.New(cfg.TasksDir)
@@ -106,8 +105,6 @@ func run() error {
 		questionSvc.LLM = proposal.NewLLMClient(cfg.LLMBaseURL, cfg.LLMModel, cfg.LLMAPIKey, time.Duration(cfg.LLMTimeoutMS)*time.Millisecond, cfg.LLMMaxRetries)
 	}
 
-	userQuestionSvc := &question.UserQuestionService{Store: userQuestions}
-
 	jobSvc := &jobs.Service{
 		Store: jobRepo,
 		Log:   log,
@@ -129,14 +126,13 @@ func run() error {
 		service.NewTaskService(taskScanner),
 		service.NewStateService(states),
 		service.NewRunService(taskScanner, codeRunner),
-		service.NewAuthService(users, sessions, states, userQuestions),
+		service.NewAuthService(users, sessions, states),
 		proposalSvc,
 		hintSvc,
 		reviewSvc,
 		questionScanner,
 		questionSvc,
 		jobSvc,
-		userQuestionSvc,
 		questionProposalSvc,
 		users,
 		sessions,

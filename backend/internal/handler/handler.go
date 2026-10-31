@@ -26,7 +26,6 @@ type Handler struct {
 	questions         *question.Scanner
 	questionInterview *question.Service
 	jobs              *jobs.Service
-	userQuestions     *question.UserQuestionService
 	questionProposal  *question.ProposalService
 	users             storage.UserRepository
 	sessions          storage.SessionRepository
@@ -45,7 +44,6 @@ func New(
 	questions *question.Scanner,
 	questionInterview *question.Service,
 	allJobs *jobs.Service,
-	userQuestions *question.UserQuestionService,
 	questionProposal *question.ProposalService,
 	users storage.UserRepository,
 	sessions storage.SessionRepository,
@@ -66,7 +64,6 @@ func New(
 		questions:         questions,
 		questionInterview: questionInterview,
 		jobs:              allJobs,
-		userQuestions:     userQuestions,
 		questionProposal:  questionProposal,
 		users:             users,
 		sessions:          sessions,

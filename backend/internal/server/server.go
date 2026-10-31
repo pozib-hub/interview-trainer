@@ -78,13 +78,6 @@ func NewRouter(d Deps) http.Handler {
 		r.With(rlLLM.Middleware).Post("/api/question-proposal", d.H.QuestionProposal)
 		r.Get("/api/jobs/{id}", d.H.Job)
 
-		r.Route("/api/my-questions", func(r chi.Router) {
-			r.Get("/", d.H.MyQuestions)
-			r.Post("/", d.H.CreateUserQuestion)
-			r.Put("/{id}", d.H.UpdateUserQuestion)
-			r.Delete("/{id}", d.H.DeleteUserQuestion)
-		})
-
 		r.Get("/api/data", d.H.GetData)
 		r.Post("/api/data", d.H.PatchData)
 
