@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math/big"
 	"net/http"
+	"net/url"
 	"sync"
 	"time"
 
@@ -27,9 +28,22 @@ const (
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  4096,
 	WriteBufferSize: 4096,
-	CheckOrigin: func(r *http.Request) bool {
-		return true // комнаты идентифицируются случайным кодом
-	},
+	CheckOrigin:     checkOrigin,
+}
+
+// checkOrigin допускает same-origin подключения (браузерный стандарт) и
+// клиентов без заголовка Origin (curl, node). Прочие источники отклоняются —
+// защита от cross-site WebSocket hijacking со страниц злоумышленника.
+func checkOrigin(r *http.Request) bool {
+	origin := r.Header.Get("Origin")
+	if origin == "" {
+		return true
+	}
+	u, err := url.Parse(origin)
+	if err != nil {
+		return false
+	}
+	return u.Host == r.Host
 }
 
 // Room — комната лайвкодинга.
@@ -410,9 +424,10 @@ func (c *conn) writePump() {
 // ─── Утилиты ───────────────────────────────────────────────────────────────
 
 // roomID — короткий однозначно читаемый код комнаты.
+// 10 символов из алфавита 31 (~8×10^14 вариантов) — перебор исключён.
 func roomID() string {
 	const alphabet = "abcdefghjkmnpqrstuvwxyz23456789"
-	out := make([]byte, 6)
+	out := make([]byte, 10)
 	for i := range out {
 		n, _ := rand.Int(rand.Reader, big.NewInt(int64(len(alphabet))))
 		out[i] = alphabet[n.Int64()]

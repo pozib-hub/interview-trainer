@@ -30,8 +30,8 @@ func TestCreateRoom(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if room.ID == "" || len(room.ID) != 6 {
-		t.Errorf("код комнаты должен быть 6 символов: %q", room.ID)
+	if room.ID == "" || len(room.ID) != 10 {
+		t.Errorf("код комнаты должен быть 10 символов: %q", room.ID)
 	}
 	room.mu.Lock()
 	content, connsLen := room.content, len(room.conns)
@@ -72,11 +72,11 @@ func TestRoomIDAlphabet(t *testing.T) {
 	seen := make(map[string]bool)
 	for i := 0; i < 100; i++ {
 		id := roomID()
-		if len(id) != 6 {
-			t.Fatalf("длина кода = %d, хочет 6", len(id))
+		if len(id) != 10 {
+			t.Fatalf("длина кода = %d, хочет 10", len(id))
 		}
 		if seen[id] {
-			// Коллизии на 100 кодах из 31^6 практически невозможны.
+			// Коллизии на 100 кодах из 31^10 практически невозможны.
 			t.Fatalf("коллизия кода комнаты: %s", id)
 		}
 		seen[id] = true
