@@ -13,8 +13,10 @@ import (
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/config"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/handler"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/hint"
+	"github.com/pozib-hub/interview-trainer-v2/backend/internal/jobs"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/live"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/proposal"
+	"github.com/pozib-hub/interview-trainer-v2/backend/internal/question"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/review"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/runner"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/scanner"
@@ -54,8 +56,11 @@ func run() error {
 	users := postgres.NewUserRepo(pool)
 	sessions := postgres.NewSessionRepo(pool)
 	states := postgres.NewStateRepo(pool)
+	userQuestions := postgres.NewUserQuestionRepo(pool)
+	jobRepo := postgres.NewJobRepo(pool)
 
 	taskScanner := scanner.New(cfg.TasksDir)
+	questionScanner := question.NewScanner(cfg.QuestionsDir)
 	codeRunner, err := runner.NewVitestRunner(cfg.NodeBin, cfg.RuntimeDir, cfg.RunTimeout)
 	if err != nil {
 		return err
@@ -86,14 +91,46 @@ func run() error {
 		Mock:  cfg.LLMMock,
 	}
 
+	questionSvc := &question.Service{
+		Scanner: questionScanner,
+		Mock:    cfg.LLMMock,
+	}
+	if cfg.LLMAPIKey != "" || cfg.LLMMock {
+		questionSvc.LLM = proposal.NewLLMClient(cfg.LLMBaseURL, cfg.LLMModel, cfg.LLMAPIKey, time.Duration(cfg.LLMTimeoutMS)*time.Millisecond, cfg.LLMMaxRetries)
+	}
+
+	userQuestionSvc := &question.UserQuestionService{Store: userQuestions}
+
+	jobSvc := &jobs.Service{
+		Store: jobRepo,
+		Log:   log,
+	}
+	jobSvc.FailAllPending(ctx, "Сервер перезапущен — задача прервана, запустите повторно")
+	questionProposalSvc := &question.ProposalService{
+		GitHub:     proposal.NewGitHubClient(cfg.GitHubAPIBase, cfg.GitHubToken, cfg.GitHubRepo, 60*time.Second),
+		Scanner:    questionScanner,
+		BaseBranch: cfg.ProposalBaseBranch,
+		DryRun:     cfg.ProposalDryRun,
+		Mock:       cfg.LLMMock,
+		MaxRetries: cfg.LLMMaxRetries,
+	}
+	if cfg.LLMAPIKey != "" || cfg.LLMMock {
+		questionProposalSvc.LLM = proposal.NewLLMClient(cfg.LLMBaseURL, cfg.LLMModel, cfg.LLMAPIKey, time.Duration(cfg.LLMTimeoutMS)*time.Millisecond, cfg.LLMMaxRetries)
+	}
+
 	h := handler.New(
 		service.NewTaskService(taskScanner),
 		service.NewStateService(states),
 		service.NewRunService(taskScanner, codeRunner),
-		service.NewAuthService(users, sessions, states),
+		service.NewAuthService(users, sessions, states, userQuestions),
 		proposalSvc,
 		hintSvc,
 		reviewSvc,
+		questionScanner,
+		questionSvc,
+		jobSvc,
+		userQuestionSvc,
+		questionProposalSvc,
 		users,
 		sessions,
 		cfg.CookieSecure,

@@ -1,5 +1,6 @@
 import type { RunResult, TaskFull, TaskSummary, TaskProposalInput, TaskProposalResult, HintResponse, TaskReview } from "./types";
 import { apiFetch } from "./fetchApi";
+import { startJob, pollJob } from "./jobsApi";
 
 export async function fetchTasks(): Promise<TaskSummary[]> {
   const res = await apiFetch("/api/tasks");
@@ -28,48 +29,40 @@ export async function runTests(taskId: string, code: string): Promise<RunResult>
   return res.json();
 }
 
+/** Генерация задачи: фоновая задача (LLM + тесты + PR), результат — поллингом. */
 export async function proposeTask(input: TaskProposalInput): Promise<{ ok: true; data: TaskProposalResult } | { ok: false; error: string }> {
-  const res = await apiFetch("/api/task-proposal", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(input),
-  });
-  const data = await res.json();
-  if (!res.ok) {
-    return { ok: false, error: data.error || `Ошибка ${res.status}` };
+  try {
+    const job = await startJob("/api/task-proposal", input);
+    const data = await pollJob<TaskProposalResult>(job.id);
+    return { ok: true, data };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Не удалось сгенерировать задачу" };
   }
-  return { ok: true, data };
 }
 
+/** Подсказка: фоновая задача (LLM), результат — поллингом. */
 export async function requestHint(
   taskId: string,
   code: string,
   previousHints: string[],
 ): Promise<HintResponse | { error: string }> {
-  const res = await apiFetch("/api/task-hint", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ taskId, code, previousHints }),
-  });
-  const data = await res.json();
-  if (!res.ok) {
-    return { error: data.error || `Ошибка ${res.status}` };
+  try {
+    const job = await startJob("/api/task-hint", { taskId, code, previousHints });
+    return await pollJob<HintResponse>(job.id);
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Не удалось получить подсказку" };
   }
-  return data;
 }
 
+/** ИИ-ревью кода: фоновая задача (LLM), результат — поллингом. */
 export async function requestReview(
   taskId: string,
   code: string,
 ): Promise<TaskReview | { error: string }> {
-  const res = await apiFetch("/api/task-review", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ taskId, code }),
-  });
-  const data = await res.json();
-  if (!res.ok) {
-    return { error: data.error || `Ошибка ${res.status}` };
+  try {
+    const job = await startJob("/api/task-review", { taskId, code });
+    return await pollJob<TaskReview>(job.id);
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Не удалось получить ревью" };
   }
-  return data;
 }

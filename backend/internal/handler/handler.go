@@ -7,24 +7,31 @@ import (
 	"net/http"
 
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/hint"
+	"github.com/pozib-hub/interview-trainer-v2/backend/internal/jobs"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/proposal"
+	"github.com/pozib-hub/interview-trainer-v2/backend/internal/question"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/review"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/service"
 	"github.com/pozib-hub/interview-trainer-v2/backend/internal/storage"
 )
 
 type Handler struct {
-	tasks         *service.TaskService
-	state         *service.StateService
-	run           *service.RunService
-	auth          *service.AuthService
-	proposal      *proposal.Service
-	hint          *hint.Service
-	review        *review.Service
-	users         storage.UserRepository
-	sessions      storage.SessionRepository
-	secureCookies bool
-	log           *slog.Logger
+	tasks             *service.TaskService
+	state             *service.StateService
+	run               *service.RunService
+	auth              *service.AuthService
+	proposal          *proposal.Service
+	hint              *hint.Service
+	review            *review.Service
+	questions         *question.Scanner
+	questionInterview *question.Service
+	jobs              *jobs.Service
+	userQuestions     *question.UserQuestionService
+	questionProposal  *question.ProposalService
+	users             storage.UserRepository
+	sessions          storage.SessionRepository
+	secureCookies     bool
+	log               *slog.Logger
 }
 
 func New(
@@ -35,6 +42,11 @@ func New(
 	proposalSvc *proposal.Service,
 	hintSvc *hint.Service,
 	reviewSvc *review.Service,
+	questions *question.Scanner,
+	questionInterview *question.Service,
+	allJobs *jobs.Service,
+	userQuestions *question.UserQuestionService,
+	questionProposal *question.ProposalService,
 	users storage.UserRepository,
 	sessions storage.SessionRepository,
 	secureCookies bool,
@@ -44,17 +56,22 @@ func New(
 		log = slog.Default()
 	}
 	return &Handler{
-		tasks:         tasks,
-		state:         state,
-		run:           run,
-		auth:          auth,
-		proposal:      proposalSvc,
-		hint:          hintSvc,
-		review:        reviewSvc,
-		users:         users,
-		sessions:      sessions,
-		secureCookies: secureCookies,
-		log:           log,
+		tasks:             tasks,
+		state:             state,
+		run:               run,
+		auth:              auth,
+		proposal:          proposalSvc,
+		hint:              hintSvc,
+		review:            reviewSvc,
+		questions:         questions,
+		questionInterview: questionInterview,
+		jobs:              allJobs,
+		userQuestions:     userQuestions,
+		questionProposal:  questionProposal,
+		users:             users,
+		sessions:          sessions,
+		secureCookies:     secureCookies,
+		log:               log,
 	}
 }
 

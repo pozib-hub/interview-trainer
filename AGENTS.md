@@ -32,10 +32,17 @@ backend/
     review/            ИИ-ревью кода после решения (вердикт, асимптотика, сравнение с эталоном)
     live/              лайвкодинг: комнаты по websocket, один пишет — все видят
     verify/            проверка задач из PR для CI (структура + прогоны vitest)
+    question/          сборник вопросов: сканер questions/ + устное собеседование (план, разбор)
+                       + свои вопросы в PostgreSQL (CRUD, переносятся при входе)
+                       + proposal: форма → ИИ оформляет вопрос-ответ → draft PR в сборник
+    jobs/              универсальные фоновые задачи для всех LLM-операций (llm_jobs в БД):
+                       создание — мгновенный jobId, результат — поллингом GET /api/jobs/{id};
+                       переживают перезагрузку страницы, не зависят от таймаутов HTTP
     handler/           HTTP-хэндлеры
     server/            chi-роутер, таймауты
   runtime/            node-окружение для тестов (vitest в node_modules)
   tasks/               219 задач — source of truth
+  questions/           сборник вопросов (4 направления, 36 глав, 287 вопросов)
 frontend/
   src/pages/           страницы (роутер: /tasks, /tasks/*, /interview)
   src/components/      TaskTree, CodeEditor, UserMenu (вход/регистрация), …
@@ -68,6 +75,9 @@ npm run build
 
 # Валидация задач (структура, шаблоны, контракт с тестами, tsc для типовых)
 make verify-tasks   # из корня; ожидается «проблем: 0»
+
+# Валидация сборника вопросов
+make verify-questions   # из корня; ожидается «All questions valid ✓»
 
 # Проверка задач из PR (то же делает GitHub Actions в .github/workflows/verify-task-pr.yml)
 cd backend && go build -o /tmp/verifytask ./cmd/verifytask

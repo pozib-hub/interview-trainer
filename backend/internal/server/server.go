@@ -62,6 +62,19 @@ func NewRouter(d Deps) http.Handler {
 		r.Post("/api/task-hint", d.H.TaskHint)
 		r.Post("/api/task-review", d.H.TaskReview)
 
+		r.Get("/api/questions", d.H.Questions)
+		r.Post("/api/question-interview/plan", d.H.QuestionInterviewPlan)
+		r.Post("/api/question-interview/analyze", d.H.QuestionInterviewAnalyze)
+		r.Post("/api/question-proposal", d.H.QuestionProposal)
+		r.Get("/api/jobs/{id}", d.H.Job)
+
+		r.Route("/api/my-questions", func(r chi.Router) {
+			r.Get("/", d.H.MyQuestions)
+			r.Post("/", d.H.CreateUserQuestion)
+			r.Put("/{id}", d.H.UpdateUserQuestion)
+			r.Delete("/{id}", d.H.DeleteUserQuestion)
+		})
+
 		r.Get("/api/data", d.H.GetData)
 		r.Post("/api/data", d.H.PatchData)
 
