@@ -20,9 +20,11 @@ ENV NODE_EXTRA_CA_CERTS=/certs/corp-ca.pem
 WORKDIR /app
 COPY --from=build /out/server /app/server
 COPY tasks ./tasks
+COPY questions ./questions
 COPY runtime/package.json ./runtime/
 RUN npm config set registry ${NPM_REGISTRY} && cd runtime && npm install --omit=dev && npm cache clean --force
 ENV TASKS_DIR=/app/tasks \
+    QUESTIONS_DIR=/app/questions \
     RUNTIME_DIR=/app/runtime \
     HTTP_ADDR=:8080
 EXPOSE 8080

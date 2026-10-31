@@ -86,3 +86,84 @@ export interface TaskReview {
   complexity: string;
   comparison: string;
 }
+
+// ─── Сборник вопросов с собеседований ──────────────────────────────────────
+
+export interface QuestionEntry {
+  id: string;
+  question: string;
+  answer: string;
+}
+
+export interface QuestionChapter {
+  id: string;
+  title: string;
+  questions: QuestionEntry[];
+}
+
+export interface QuestionsTechnology {
+  id: string;
+  directionId: string;
+  title: string;
+  description: string;
+  order?: number;
+  chapters: QuestionChapter[];
+}
+
+export interface QuestionsDirection {
+  id: string;
+  title: string;
+  description: string;
+  order?: number;
+  technologies: QuestionsTechnology[];
+  chapters: QuestionChapter[];
+}
+
+export interface QuestionsIndex {
+  directions: QuestionsDirection[];
+}
+
+export interface UserQuestion {
+  id: string;
+  question: string;
+  answer: string;
+  category?: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface PlanQuestion {
+  id: string;
+  question: string;
+  answer: string;
+  techTitle: string;
+  chapterTitle: string;
+}
+
+export interface AnalyzeVerdict {
+  id: string;
+  ok: boolean;
+  feedback: string;
+}
+
+export interface StoredInterviewSession {
+  version: 1;
+  startedAt: number;
+  direction: string;
+  questions: PlanQuestion[];
+  answers: Record<string, string>;
+  currentIndex: number;
+  analyzeJobId?: string;
+}
+
+export type QuestionJobStatus = "pending" | "running" | "done" | "failed";
+
+export interface QuestionJob {
+  id: string;
+  kind: "plan" | "analyze";
+  status: QuestionJobStatus;
+  result?: unknown;
+  error?: string;
+  createdAt: number;
+  updatedAt: number;
+}

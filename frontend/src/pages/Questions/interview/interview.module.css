@@ -1,0 +1,330 @@
+/* Устное собеседование по вопросам */
+
+.Banner {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  margin-bottom: 16px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  line-height: 1.5;
+}
+
+.BannerError {
+  border-color: var(--red);
+}
+
+.BannerInfo {
+  border-color: var(--accent);
+}
+
+.Chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 4px;
+}
+
+.Chip {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.Chip:hover {
+  border-color: var(--accent);
+}
+
+.ChipActive {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--bg-softer);
+  font-weight: 600;
+}
+
+.ChipsHint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 6px 0 0;
+}
+
+.PlanningBox {
+  text-align: center;
+  padding: 70px 0;
+}
+
+.PlanningTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.PlanningHint {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ─── Сессия ─────────────────────────────────────────────── */
+
+.SessionHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.Timer {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.Progress {
+  height: 4px;
+  background: var(--bg-softer);
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 12px 0 22px;
+}
+
+.ProgressFill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.3s;
+}
+
+.QuestionCard {
+  padding: 28px 24px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.QuestionMeta {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+}
+
+.QuestionText {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.MicRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0 12px;
+  flex-wrap: wrap;
+}
+
+.MicBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.MicBtn:hover {
+  border-color: var(--accent);
+}
+
+.MicBtnActive {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.ListeningDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+  animation: Pulse 1.2s infinite;
+}
+
+@keyframes Pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.Interim {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 13px;
+  margin: 0 0 8px;
+  min-height: 18px;
+}
+
+.AnswerLabel {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.SessionNav {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.FinishLink {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+  font-family: inherit;
+  padding: 0;
+}
+
+.FinishLink:hover {
+  color: var(--text);
+}
+
+.Overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 17, 23, 0.78);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  z-index: 50;
+}
+
+.OverlayText {
+  color: var(--text);
+  font-size: 15px;
+}
+
+.OverlayHint {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+/* ─── Результаты ─────────────────────────────────────────── */
+
+.ScoreLine {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.SkippedNote {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+}
+
+.SummaryCard {
+  padding: 16px 18px;
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  background: var(--bg-soft);
+  margin: 16px 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.VerdictItem {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-soft);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.VerdictHead {
+  display: flex;
+  gap: 10px;
+  padding: 14px 16px;
+  align-items: flex-start;
+}
+
+.VerdictIcon {
+  font-size: 15px;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+.VerdictQuestion {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.VerdictBody {
+  border-top: 1px dashed var(--border);
+  padding: 6px 16px 14px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.VerdictBody pre {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  overflow-x: auto;
+  font-size: 13px;
+}
+
+.VerdictBody code {
+  font-family: "SF Mono", Monaco, Menlo, monospace;
+}
+
+.VerdictBody p code {
+  background: var(--bg-softer);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.VerdictLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin: 10px 0 4px;
+}
+
+.UserAnswer {
+  color: var(--text-muted);
+  white-space: pre-wrap;
+}

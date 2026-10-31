@@ -1,0 +1,480 @@
+.Main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px 48px;
+}
+
+.Container {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.PageHead {
+  margin-bottom: 20px;
+}
+
+.Breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.CrumbLink {
+  color: var(--text-muted);
+}
+
+.CrumbLink:hover {
+  color: var(--accent);
+}
+
+.PageTitle {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.PageDesc {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 6px 0 0;
+  line-height: 1.5;
+}
+
+.PageMeta {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+/* ─── Поиск ──────────────────────────────────────────────── */
+
+.Search {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.SearchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.SearchInput {
+  width: 100%;
+  padding: 10px 34px 10px 34px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.SearchInput::placeholder {
+  color: var(--text-muted);
+}
+
+.SearchInput:focus {
+  border-color: var(--accent);
+}
+
+.SearchClear {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 6px;
+  border-radius: 6px;
+  line-height: 1;
+}
+
+.SearchClear:hover {
+  color: var(--text);
+  background: var(--bg-softer);
+}
+
+/* ─── Карточки направлений и технологий ───────────────────── */
+
+.Grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.Card {
+  display: block;
+  padding: 16px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.15s;
+}
+
+.Card:hover {
+  border-color: var(--accent);
+}
+
+.CardTitle {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.CardDesc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 6px 0 0;
+  line-height: 1.5;
+}
+
+.CardMeta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 12px;
+}
+
+/* ─── Результаты поиска ───────────────────────────────────── */
+
+.ResultItem {
+  display: block;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  background: var(--bg-soft);
+  text-decoration: none;
+  transition: border-color 0.15s;
+}
+
+.ResultItem:hover {
+  border-color: var(--accent);
+}
+
+.ResultQuestion {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.ResultPath {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ─── Главы и вопросы ─────────────────────────────────────── */
+
+.Toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.ToolbarCount {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.ToolbarButton {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12px;
+  padding: 6px 10px;
+  line-height: 1;
+}
+
+.ToolbarButton:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.Chapter {
+  margin-bottom: 28px;
+}
+
+.ChapterHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ChapterTitle {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.ChapterCount {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.Question {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  background: var(--bg-soft);
+  overflow: hidden;
+}
+
+.QuestionRow {
+  display: flex;
+  align-items: stretch;
+}
+
+.QuestionButton {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: none;
+  border: none;
+  text-align: left;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.QuestionButton:hover {
+  background: var(--bg-softer);
+}
+
+.QuestionActions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 8px 0 6px;
+  border-left: 1px dashed var(--border);
+}
+
+.IconBtn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 6px;
+  border-radius: 6px;
+  line-height: 1;
+}
+
+.IconBtn:hover {
+  color: var(--text);
+  background: var(--bg-softer);
+}
+
+.QuestionIndex {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  min-width: 22px;
+  flex-shrink: 0;
+}
+
+.QuestionChevron {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-size: 11px;
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+
+.QuestionChevronOpen {
+  transform: rotate(90deg);
+}
+
+.Answer {
+  padding: 12px 14px 14px 46px;
+  border-top: 1px dashed var(--border);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.Answer pre {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  overflow-x: auto;
+  font-size: 13px;
+}
+
+.Answer code {
+  font-family: "SF Mono", Monaco, Menlo, monospace;
+}
+
+.Answer p code {
+  background: var(--bg-softer);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.Answer p {
+  margin: 0 0 10px;
+}
+
+.Answer p:last-child {
+  margin-bottom: 0;
+}
+
+.Answer ul {
+  margin: 0 0 10px;
+  padding-left: 18px;
+}
+
+.AddQuestionNote {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 24px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border);
+}
+
+/* ─── Форма своего вопроса ────────────────────────────────── */
+
+.Form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.Label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.Textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.6;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.Textarea:focus {
+  border-color: var(--accent);
+}
+
+.Textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.Select {
+  max-width: 320px;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.Select:focus {
+  border-color: var(--accent);
+}
+
+.FormActions {
+  display: flex;
+  gap: 8px;
+}
+
+.MyQuestionsSection {
+  margin-top: 28px;
+}
+
+.CardAccent {
+  border-style: dashed;
+}
+
+/* ─── Баннер устного собеседования ───────────────────────── */
+
+.InterviewBanner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  background: var(--bg-soft);
+  text-decoration: none;
+  color: var(--text);
+  margin-bottom: 20px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.InterviewBanner:hover {
+  background: var(--bg-softer);
+}
+
+.InterviewBannerTitle {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.InterviewBannerDesc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 4px 0 0;
+}
+
+.InterviewBannerArrow {
+  font-size: 18px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .Main {
+    padding: 16px 14px 40px;
+  }
+
+  .Answer {
+    padding-left: 14px;
+  }
+}

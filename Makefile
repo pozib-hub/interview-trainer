@@ -1,6 +1,6 @@
 COMPOSE := docker compose
 
-.PHONY: up down logs ps rebuild verify-tasks
+.PHONY: up down logs ps rebuild verify-tasks verify-questions
 
 up:
 	$(COMPOSE) up -d --build
@@ -30,3 +30,8 @@ rebuild:
 # контракт «шаблон ↔ тесты», tsc-проверка типовых задач (эталон/шаблон)
 verify-tasks:
 	cd scripts/e2e-audit && node verify-tasks.js
+
+# Валидация сборника вопросов: meta.json у узлов, заголовки глав,
+# непустые ответы, kebab-case имён
+verify-questions:
+	node scripts/validate-questions.mjs

@@ -1,0 +1,176 @@
+name: Generate Question from Issue
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Номер issue для обработки"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: question-issue-${{ github.event.issue.number || github.event.inputs.issue_number }}
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    # Detect question-proposal issues by body content (template marker) OR
+    # the "question" label. Skip if already processed (question-processed).
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'issues' &&
+        !contains(github.event.issue.labels.*.name, 'question-processed') &&
+        (
+          contains(github.event.issue.labels.*.name, 'question') ||
+          contains(github.event.issue.body, '## Вопрос')
+        )
+      )
+    steps:
+      - name: Чекаут репозитория
+        uses: actions/checkout@v4
+
+      - name: Resolve issue number
+        id: issue
+        run: |
+          if [ -n "${{ github.event.inputs.issue_number }}" ]; then
+            echo "number=${{ github.event.inputs.issue_number }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "number=${{ github.event.issue.number }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Создать лейблы если нет
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create "question" --description "Заявка на добавление вопроса" --color "0E8A16" --force || true
+          gh label create "question-processing" --description "Вопрос в обработке" --color "FBCA04" --force || true
+          gh label create "question-processed" --description "Вопрос обработан, PR создан" --color "1B5E20" --force || true
+          gh label create "question-failed" --description "Ошибка генерации вопроса" --color "B71C1C" --force || true
+
+      - name: Получить данные issue
+        id: issuedata
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_JSON=$(gh issue view ${{ steps.issue.outputs.number }} --json number,title,body,labels)
+          echo "title=$(echo "$ISSUE_JSON" | jq -r .title)" >> "$GITHUB_OUTPUT"
+          echo "labels=$(echo "$ISSUE_JSON" | jq -r '.labels[].name' | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+          echo "$ISSUE_JSON" | jq -r .body > /tmp/issue-body.md
+
+      - name: Поставить label question, если ещё нет
+        if: ${{ !contains(steps.issuedata.outputs.labels, 'question') }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh issue edit ${{ steps.issue.outputs.number }} --add-label "question" || true
+
+      - name: Пропуск если уже обработан
+        if: contains(steps.issuedata.outputs.labels, 'question-processed')
+        run: echo "Issue уже обработан — пропуск." && exit 0
+
+      - name: Пометить как в обработке
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue edit ${{ steps.issue.outputs.number }} --remove-label "question-failed" || true
+          gh issue edit ${{ steps.issue.outputs.number }} --add-label "question-processing" || true
+          gh issue comment ${{ steps.issue.outputs.number }} --body "🤖 Начинаю генерацию вопроса (AI pipeline)..." || true
+
+      - name: Установить Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Сгенерировать вопрос через LLM
+        id: gen
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY || secrets.DEEPSEEK_API_KEY || secrets.OPENAI_API_KEY }}
+          LLM_BASE_URL: ${{ secrets.LLM_BASE_URL || 'https://api.deepseek.com/v1' }}
+          LLM_MODEL: ${{ secrets.LLM_MODEL || 'deepseek-chat' }}
+          QUESTIONS_ROOT: ${{ github.workspace }}/backend/questions
+          SKIP_BUILD: "true"
+        run: |
+          export ISSUE_TITLE="${{ steps.issuedata.outputs.title }}"
+          export ISSUE_BODY="$(cat /tmp/issue-body.md)"
+          node .github/scripts/generate-question.mjs 2>&1 | tee /tmp/gen-output.txt
+          code=${PIPESTATUS[0]}
+          if [ $code -ne 0 ]; then
+            exit 1
+          fi
+          BRANCH=$(grep '^::branch::' /tmp/gen-output.txt | sed 's/^::branch:://' | head -1)
+          TITLE=$(grep '^::title::' /tmp/gen-output.txt | sed 's/^::title:://' | head -1)
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "title=$TITLE" >> "$GITHUB_OUTPUT"
+
+      - name: Загрузить лог пайплайна как artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: question-pipeline-log-issue-${{ steps.issue.outputs.number }}
+          path: |
+            .github/_pipeline-log.md
+            .github/_error.md
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Создать Pull Request
+        id: pr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "Добавлен вопрос в ${{ steps.gen.outputs.branch }} (issue #${{ steps.issue.outputs.number }})"
+          branch: ${{ steps.gen.outputs.branch }}
+          title: "Вопрос: ${{ steps.gen.outputs.title }}"
+          body-path: .github/_pr_preview.md
+          labels: "generated-question"
+          assignees: ${{ github.event.issue.user.login || github.actor }}
+          draft: true
+
+      - name: Прокомментировать с PR-ссылкой и пометить готовым
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ steps.pr.outputs.pull-request-url }}
+        run: |
+          gh issue comment ${{ steps.issue.outputs.number }} --body "✅ Вопрос сгенерирован и оформлен как черновик PR: ${PR_URL}
+
+          Проверьте PR перед merge. При необходимости отредактируйте файл главы прямо в ветке."
+          gh issue edit ${{ steps.issue.outputs.number }} --remove-label "question-processing" --add-label "question-processed" || true
+
+      - name: Сообщить об ошибке в issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -f .github/_error.md ]; then
+            ERROR_MSG="$(cat .github/_error.md)"
+          else
+            ERROR_MSG="См. логи workflow: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          fi
+          cat > /tmp/fail-comment.md <<COMMENT_EOF
+          ❌ Не удалось сгенерировать вопрос.
+
+          **Причина:**
+          \`\`\`
+          $ERROR_MSG
+          \`\`\`
+
+          Что можно сделать:
+          - проверьте, что секция «Вопрос» заполнена;
+          - отредактируйте issue и перезапустите workflow вручную: Actions → «Generate Question from Issue» → Run workflow с номером этого issue.
+          COMMENT_EOF
+          gh issue comment ${{ steps.issue.outputs.number }} --body-file /tmp/fail-comment.md || true
+          gh issue edit ${{ steps.issue.outputs.number }} --remove-label "question-processing" --add-label "question-failed" || true
+
+      - name: Снять метку обработки при отмене
+        if: cancelled()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh issue edit ${{ steps.issue.outputs.number }} --remove-label "question-processing" || true

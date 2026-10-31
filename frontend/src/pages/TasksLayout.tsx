@@ -57,6 +57,7 @@ export default function TasksLayout() {
           )}
         </Typography>
         <Spacer />
+        <Button size="sm" href="/questions" title="Сборник вопросов с собеседований">❓ Вопросы</Button>
         <Button size="sm" href="/interview">🎯 Собеседование</Button>
         <Button size="sm" href="/progress" title="Дашборд прогресса: активность, темы, рекомендации">📊 Прогресс</Button>
         <Button
